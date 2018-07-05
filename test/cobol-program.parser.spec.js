@@ -87,7 +87,7 @@ describe('Read and parse program definitions', function(){
         fs.writeFileSync('./parsed-program.CCP0002.CBL.references.json', JSON.stringify(references, null, 2));
         
         
-        assert(references.length==24, 'error');
+        assert(references.EXEC_SQL.length==24, 'error');
     });
 
 });

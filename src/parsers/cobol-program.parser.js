@@ -296,6 +296,8 @@ function initializeCOBOLProgramParser(){
     
     function extractReferences(parsedProgram){
         const statements = [];
+        const result = {};
+
         const pushRecursive = (o)=> {
             statements.push(...o.statements);
             if(o.divisions) o.divisions.map(pushRecursive);
@@ -303,22 +305,27 @@ function initializeCOBOLProgramParser(){
         };
         pushRecursive(parsedProgram);    
         
-        return statements.map((stmt) => {
+        statements.map((stmt) => {
+            let ref = null;
             switch (stmt.STMT_TYPE) {
                 case 'CALL_PROGRAM':
-                    return {type: 'PROGRAM', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
+                    ref = {type: 'PROGRAM', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
                 case 'COPY':
-                    return {type: 'COPY', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
+                    ref = {type: 'COPY', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
                 case 'EXEC_CICS':
-                    return {type: 'CICS', reference: (stmt.programName)};
+                    ref = {type: 'CICS', reference: (stmt.programName)};
                 case 'EXEC_SQL':
-                    if(stmt.include) break;
-                    return {type: 'SQL', reference: (stmt.sqlStatement)};
+                    if(stmt.include) return;
+                    ref = {type: 'SQL', reference: (stmt.sqlStatement)};
                 default:
-                    return {type: stmt.STMT_TYPE, reference: (stmt.sqlStatement)};
+                    ref = {type: stmt.STMT_TYPE, reference: (stmt.sqlStatement)};
             }
+            
+            if(!result[ref.type]) result[ref.type] = [];
+            result[ref.type].push(ref);
         });
 
+        return result;
     }
 
     var cobol_program = {
