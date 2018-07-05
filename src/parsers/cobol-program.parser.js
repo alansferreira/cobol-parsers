@@ -309,16 +309,16 @@ function initializeCOBOLProgramParser(){
             let ref = null;
             switch (stmt.STMT_TYPE) {
                 case 'CALL_PROGRAM':
-                    ref = {type: 'PROGRAM', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
+                    ref = {type: 'programs', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
                 case 'COPY':
-                    ref = {type: 'COPY', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
+                    ref = {type: 'copies', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
                 case 'EXEC_CICS':
-                    ref = {type: 'CICS', reference: (stmt.programName)};
+                    ref = {type: 'cics', reference: (stmt.programName)};
                 case 'EXEC_SQL':
                     if(stmt.include) return;
-                    ref = {type: 'SQL', reference: (stmt.sqlStatement)};
+                    ref = {type: 'queries', reference: (stmt.sqlStatement)};
                 default:
-                    ref = {type: stmt.STMT_TYPE, reference: (stmt.sqlStatement)};
+                    ref = {type: stmt.STMT_TYPE.toLowerCase().replace(/[-_]/g, ''), reference: (stmt.sqlStatement)};
             }
             
             if(!result[ref.type]) result[ref.type] = [];
