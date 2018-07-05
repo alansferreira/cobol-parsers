@@ -1,0 +1,21 @@
+{
+  "name": "cobol-parsers",
+  "version": "1.0.0",
+  "description": "COBOL Structures Parsers",
+  "main": "./src/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alansferreira/cobol-parsers.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alansferreira/cobol-parsers/issues"
+  },
+  "homepage": "https://github.com/alansferreira/cobol-parsers#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "5.2.0"
+  }
+}

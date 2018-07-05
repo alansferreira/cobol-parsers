@@ -1,0 +1,77 @@
+
+
+# DD Exemple
+> `DSN=MTHUSER.EXAMPROG.OUTPUT,DISP=(NEW,CATLG,DELETE),UNIT=(SYSDA,20),SPACE=(CYL,(50,25)),DCB=(RECFM=FB,LRECL=80,BLKSIZE=0,BUFNO=2),DISP=(NEW,delete)`
+
+----
+
+### DD Command
+
+> `DD[ ]{1,}(.+)`
+
+### DD DNS
+
+> `/,?(DSN)=([a-zA-Z/.0-9]+)/gi`
+
+----
+
+### DD BLKSIZE 
+
+> `/,?(BLKSIZE)=([0-9]+)/gi`
+
+----
+
+### DISP
+
+> `/,?(DISP)=\([^\)]+\)/gi`
+
+#### DISP Params
+
+> `[NEW,DELETE,OLD,KEEP,KEEP,SHR,PASS,CATLG,MOD,CATLG,UNCATLG]`
+
+##### DISP Generic params expr
+
+> `(,?[a-zA-Z]+)`
+
+----
+
+
+### DCB
+
+> `/,?(DCB)=\([^\)]+\)/gi`
+
+#### DCB Params
+
+
+> `[BFALN,BFTEK,BLKSIZE,BUFIN,BUFL,BUFMAX,BUFNO,BUFOFF,BUFOUT,BUFSIZE,CPRI,CYLOFL,DEN,DIAGNS,DSORG,EROPT,FUNC,GNCP,INTVL,IPLTXID,KEYLEN,LIMCT,LRECL,MODE,NCP,NTM,OPTCD,PCI,PRTSP,RECFM,RESERVE,RKP,STACK,THRESH,TRTCH]`
+
+##### DCB Generic params expr
+
+> `(,?([a-zA-Z])=[a-zA-Z0-9\#\$]+)?`
+
+
+
+
+
+
+BLKSIZE
+DCB
+DDname
+DEST
+DISP
+DSNAME
+DSNTYPE
+EXPDT
+KEYLEN
+LABEL
+LIKE
+LRECL
+OUTLIM
+OUTPUT
+RECFM
+RECORG
+RETPD
+SPACE
+SYSOUT
+UNIT
+VOLUME

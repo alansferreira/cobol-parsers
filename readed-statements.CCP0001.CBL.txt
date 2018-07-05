@@ -1,0 +1,213 @@
+[2, 2]: IDENTIFICATION                  DIVISION.
+[4, 4]: PROGRAM-ID.                     CMCD3QBA.
+[5, 5]: AUTHOR.                         FERNANDO ALVES MOREIRA.
+[42, 42]: ENVIRONMENT                     DIVISION.
+[45, 45]: CONFIGURATION                   SECTION.
+[47, 47]: SPECIAL-NAMES.
+[48, 48]:     DECIMAL-POINT               IS  COMMA.
+[51, 51]: DATA                            DIVISION.
+[56, 56]: WORKING-STORAGE                 SECTION.
+[59, 60]: 77  FILLER                      PIC  X(050)    VALUE    '*** CMCD3QBA - INICIO DA AREA DE WORKING ***'.
+[63, 64]: 77  FILLER                      PIC  X(050)    VALUE    '*** AREA DE TRATAMENTO DE LOG DE ERRO ***'.
+[66, 66]: 01  WRK-AREA-ERRO.
+[67, 67]:     COPY 'I#FRWKGE'.
+[68, 68]:      05  WRK-BLOCO-INFO-ERRO.
+[69, 71]:        10  WRK-CHAR-INFO-ERRO   PIC  X(001)                    OCCURS 0    TO 30000 TIMES                    DEPENDING   ON FRWKGHEA-TAM-DADOS.
+[74, 75]: 01  FILLER                      PIC  X(050)         VALUE    'AREA DE ERRO DB2'.
+[78, 78]: 01  WRK-AREA-ERRO-DB2.
+[79, 79]:     COPY 'I#FRWKDB'.
+[82, 83]: 77  FILLER                      PIC  X(050)    VALUE    '*** AREA DE TRATAMENTO DE ERROS CICS ***'.
+[85, 85]: 01  WRK-AREA-ERRO-CICS.
+[86, 86]:     COPY 'I#FRWKCI'.
+[89, 90]: 77  FILLER                      PIC X(050)     VALUE    'AREA DE TRATAMENTO DE ERROS DE MODULO'.
+[92, 92]: 01  WRK-AREA-ERRO-MODULO.
+[93, 93]:     COPY 'I#FRWKMD'.
+[96, 97]: 77  FILLER                      PIC  X(050)    VALUE    '*** CBCD3AAC - AREA DE BOOKS FUNCIONAL ***'.
+[99, 99]: 01  WRK-AREA-CBCD3AAC.
+[100, 100]:     COPY CBCDW00V.
+[101, 101]:     COPY CBCDWAAI.
+[104, 105]: 77  FILLER                      PIC  X(050)    VALUE    '*** CMCD3AAC - AREA DE BOOKS FUNCIONAL ***'.
+[107, 107]: 01  WRK-AREA-CMCD3AAC.
+[108, 108]:     COPY CMCDWAAI.
+[111, 112]: 77  FILLER                      PIC  X(050)    VALUE    '*** CMCD420A - AREA DE BOOKS FUNCIONAL ***'.
+[114, 114]: 01  WRK-AREA-CMCD420A.
+[115, 115]:     COPY CMCPW000.
+[116, 116]:     COPY CMCDW20I.
+[119, 120]: 77  FILLER                      PIC  X(050)    VALUE    '*** CMCD421A - AREA DE BOOKS FUNCIONAL ***'.
+[122, 122]: 01  WRK-AREA-CMCD421A.
+[123, 123]:     COPY CMCPW000.
+[124, 124]:     COPY CMCDW21I.
+[127, 128]: 77  FILLER                      PIC  X(050)    VALUE    '*** CMCD3QBA - VARIAVEIS AUXILIARES ***'.
+[130, 130]: 01  WRK-VARIAVEIS-AUXILIARES.
+[131, 131]:     05  WRK-FRWK1999            PIC  X(008)    VALUE 'FRWK1999'.
+[132, 132]:     05  WRK-PROGRAMA            PIC  X(008)    VALUE 'CMCD3QBA'.
+[133, 133]:     05  WRK-CMCD3AAC            PIC  X(008)    VALUE 'CMCD3AAC'.
+[134, 134]:     05  WRK-CBCD3AAC            PIC  X(008)    VALUE 'CBCD3AAC'.
+[135, 135]:     05  WRK-CMCD420A            PIC  X(008)    VALUE 'CMCD420A'.
+[136, 136]:     05  WRK-CMCD421A            PIC  X(008)    VALUE 'CMCD421A'.
+[137, 137]:     05  WRK-TRATAMENTO-ERROS.
+[138, 138]:         10  WRK-MENSAGEM        PIC  X(008)    VALUE SPACES.
+[139, 139]:         10  WRK-IDIOMA          PIC  9(005)    VALUE ZEROS.
+[140, 140]:         10  WRK-PARAMETROS      PIC  X(500)    VALUE SPACES.
+[142, 142]: 01  WRK-CPSSOA-JUR-CONTR-S      PIC +9(010) VALUE ZEROS.
+[143, 143]: 01  FILLER                      REDEFINES WRK-CPSSOA-JUR-CONTR-S.
+[144, 144]:     05 FILLER                   PIC  X(001).
+[145, 145]:     05 WRK-CPSSOA-JUR-CONTR-R   PIC  9(010).
+[147, 147]: 01  WRK-CTPO-CONTR-NEGOC-S      PIC +9(003) VALUE ZEROS.
+[148, 148]: 01  FILLER                      REDEFINES WRK-CTPO-CONTR-NEGOC-S.
+[149, 149]:     05 FILLER                   PIC  X(001).
+[150, 150]:     05 WRK-CTPO-CONTR-NEGOC-R   PIC  9(003).
+[152, 152]: 01  WRK-NSEQ-CONTR-NEGOC-S      PIC +9(010) VALUE ZEROS.
+[153, 153]: 01  FILLER                      REDEFINES WRK-NSEQ-CONTR-NEGOC-S.
+[154, 154]:     05 FILLER                   PIC  X(001).
+[155, 155]:     05 WRK-NSEQ-CONTR-NEGOC-R   PIC  9(010).
+[158, 159]: 01  FILLER                      PIC  X(050)         VALUE    'AREA PARA INCLUDES DB2'.
+[162, 164]:     EXEC SQL         INCLUDE SQLCA    END-EXEC.
+[166, 168]:     EXEC SQL         INCLUDE CBCDB023    END-EXEC.
+[171, 172]: 01  FILLER                      PIC  X(050)         VALUE    'AREA PARA CURSORES'.
+[175, 184]:     EXEC SQL         DECLARE  CSR01-CBCDB023  CURSOR  FOR         SELECT CPSSOA_JURID_CONTR,                CTPO_CONTR_NEGOC  ,                NSEQ_CONTR_NEGOC         FROM DB2PRD.TCTA_BCRIA_COBR         WHERE  CBCO_EXTER_CONTR  = :CBCDB023.CBCO-EXTER-CONTR           AND  CAG_EXTER_CONTR   = :CBCDB023.CAG-EXTER-CONTR           AND  NCTA_EXTER_CONTR  = :CBCDB023.NCTA-EXTER-CONTR    END-EXEC.
+[187, 188]: 77  FILLER                      PIC  X(050)    VALUE    '* FIM DA AREA DE WORKING *'.
+[192, 192]: LINKAGE                         SECTION.
+[194, 194]: 01  DFHCOMMAREA.
+[195, 195]:     COPY CMCPW000.
+[196, 196]:     COPY CMCDWQBI.
+[199, 199]: PROCEDURE DIVISION              USING DFHCOMMAREA.
+[203, 203]: 0000-ROTINA-PRINCIPAL           SECTION.
+[206, 206]:     PERFORM 1000-PROCEDIMENTOS-INICIAIS.
+[208, 208]:     PERFORM 2000-PROCESSAMENTO-PRINCIPAL.
+[210, 210]:     PERFORM 9000-PROCEDIMENTOS-FINAIS.
+[213, 213]: 0000-99-FIM.                    EXIT.
+[217, 217]: 1000-PROCEDIMENTOS-INICIAIS     SECTION.
+[220, 229]:     INITIALIZE   FRWKGHEA-REGISTRO                 FRWKGMOD-REGISTRO                 FRWKGCIC-REGISTRO                 FRWKGERR-REGISTRO                 FRWKGDB2-REGISTRO                 WRK-TRATAMENTO-ERROS                 WRK-AREA-CMCD3AAC                 WRK-AREA-CMCD420A                 WRK-AREA-CMCD421A                 CMCPW000-BLOCO-RETORNO OF DFHCOMMAREA.
+[231, 231]:     PERFORM 1100-VALIDAR-SEGURANCA.
+[232, 232]:     PERFORM 1200-CONSITIR-ENTRADA.
+[235, 235]: 1000-99-FIM.                    EXIT.
+[239, 239]: 1100-VALIDAR-SEGURANCA          SECTION.
+[242, 243]:     MOVE '1100-VALIDAR-SEGURANCA'                                TO FRWKGHEA-IDEN-PARAGRAFO.
+[245, 247]:     INITIALIZE                  CBCDW00V-BLOCO-RETORNO                                OF WRK-AREA-CBCD3AAC                                CBCDWAAI-BLOCO-ENTRADA.
+[249, 250]:     MOVE CMCDWQBI-CUSUAR-INCL   TO CBCDWAAI-E-CUSUAR    MOVE ZEROS                  TO CBCDWAAI-E-CFUNCL.
+[252, 257]:     EXEC CICS LINK         PROGRAM  (WRK-CBCD3AAC)         COMMAREA (WRK-AREA-CBCD3AAC)         LENGTH   (LENGTH OF WRK-AREA-CBCD3AAC)         NOHANDLE    END-EXEC.
+[259, 267]:     IF  EIBRESP                 NOT EQUAL DFHRESP(NORMAL)        MOVE 16                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E010'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0010'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9100-ERRO-CICS    END-IF.
+[269, 278]:     IF  CBCDW00V-COD-RETORNO    OF WRK-AREA-CBCD3AAC                                NOT EQUAL ZEROS AND 01        MOVE 12                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E020'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0009'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9300-ERRO-MODULO    END-IF.
+[281, 281]: 1100-99-FIM.                    EXIT.
+[285, 285]: 1200-CONSITIR-ENTRADA          SECTION.
+[288, 297]:     IF  CMCDWQBI-CBCO           NOT NUMERIC OR        CMCDWQBI-CBCO           EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E030'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[299, 308]:     IF  CMCDWQBI-CAGE           NOT NUMERIC OR        CMCDWQBI-CAGE           EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E040'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[310, 319]:     IF  CMCDWQBI-CCTA           NOT NUMERIC OR        CMCDWQBI-CCTA           EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E050'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[321, 330]:     IF  CMCDWQBI-CTPO-CANAL-E   NOT NUMERIC OR        CMCDWQBI-CTPO-CANAL-E   EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E060'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[332, 340]:     IF  CMCDWQBI-RTPO-CANAL-E   EQUAL SPACES        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E070'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[342, 351]:     IF  CMCDWQBI-VLIM-INSTC     NOT NUMERIC OR        CMCDWQBI-VLIM-INSTC     EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E080'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[353, 362]:     IF  CMCDWQBI-VLIM-OUTRA     NOT NUMERIC OR        CMCDWQBI-VLIM-OUTRA     EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E090'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[364, 375]:     IF  CMCDWQBI-VLIM-INSTC-CANAL                                NOT NUMERIC OR        CMCDWQBI-VLIM-INSTC-CANAL                                EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E100'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[377, 388]:     IF  CMCDWQBI-VLIM-OUTRA-CANAL                                NOT NUMERIC OR        CMCDWQBI-VLIM-OUTRA-CANAL                                EQUAL ZEROS        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E110'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[390, 398]:     IF  CMCDWQBI-HINCL-USUAR    EQUAL SPACES        MOVE 08                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E115'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0007'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9000-PROCEDIMENTOS-FINAIS    END-IF.
+[401, 401]: 1200-99-FIM.                    EXIT.
+[405, 405]: 2000-PROCESSAMENTO-PRINCIPAL    SECTION.
+[408, 408]:     PERFORM 2100-ABRIR-CURSOR.
+[410, 410]:     PERFORM 2200-LER-CURSOR.
+[412, 416]:     IF SQLCODE                  EQUAL +100       PERFORM 2600-ACESSAR-CMCD421A    ELSE       PERFORM 2300-ALTERACAO-LIMITE    END-IF.
+[418, 418]:     PERFORM 2700-FECHAR-CURSOR.
+[421, 421]: 2000-99-FIM.                    EXIT.
+[425, 425]: 2100-ABRIR-CURSOR               SECTION.
+[428, 428]:     MOVE '2100-ABRIR-CURSOR'    TO FRWKGHEA-IDEN-PARAGRAFO.
+[430, 431]:     MOVE CMCDWQBI-CBCO          TO CBCO-EXTER-CONTR                                OF CBCDB023.
+[432, 433]:     MOVE CMCDWQBI-CAGE          TO CAG-EXTER-CONTR                                OF CBCDB023.
+[434, 435]:     MOVE CMCDWQBI-CCTA          TO NCTA-EXTER-CONTR                                OF CBCDB023.
+[437, 439]:     EXEC SQL         OPEN CSR01-CBCDB023    END-EXEC.
+[441, 453]:     IF (SQLCODE                      NOT EQUAL ZEROS) OR       (SQLWARN0                     EQUAL 'W')        SET ERRO-DB2                 TO TRUE        SET DB2-OPEN                 TO TRUE        MOVE 16                      TO CMCPW000-COD-RETORNO                                     OF DFHCOMMAREA        MOVE 'E130'                  TO CMCPW000-COD-ERRO                                     OF DFHCOMMAREA        MOVE 'CMCD0024'              TO CMCPW000-COD-MENSAGEM                                     OF DFHCOMMAREA        MOVE 'TCTA_BCRIA_COBR'       TO FRWKGDB2-NOME-TABELA        PERFORM 9998-TRATAR-ERRO    END-IF.
+[456, 456]: 2100-99-FIM.                    EXIT.
+[460, 460]: 2200-LER-CURSOR                 SECTION.
+[463, 463]:     MOVE '2200-LER-CURSOR'      TO FRWKGHEA-IDEN-PARAGRAFO.
+[465, 470]:     EXEC SQL         FETCH  CSR01-CBCDB023          INTO :CBCDB023.CPSSOA-JURID-CONTR,               :CBCDB023.CTPO-CONTR-NEGOC  ,               :CBCDB023.NSEQ-CONTR-NEGOC    END-EXEC.
+[472, 481]:     IF (SQLCODE                 NOT EQUAL ZEROS AND +100) OR       (SQLWARN0                EQUAL 'W')        MOVE 16                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E140'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0024'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9998-TRATAR-ERRO    END-IF.
+[485, 485]: 2200-99-FIM.                    EXIT.
+[489, 489]: 2300-ALTERACAO-LIMITE            SECTION.
+[492, 492]:     PERFORM 2400-ACESSAR-CMCD3AAC.
+[494, 519]:     IF CMCDWAAI-COD-RETORNO     EQUAL ZEROS       PERFORM 2500-ACESSAR-CMCD420A    ELSE       IF CMCDWAAI-COD-RETORNO  EQUAL 10 OR 88          MOVE CMCDWAAI-COD-RETORNO                                TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA          MOVE 'E160'           TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA          MOVE 'CMCD0008'       TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA          PERFORM 9000-PROCEDIMENTOS-FINAIS       ELSE          IF CMCDWAAI-COD-RETORNO                                EQUAL 01             MOVE CMCDWAAI-COD-RETORNO                                TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA             MOVE 'E170'        TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA             MOVE 'CMCD0023'    TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA             PERFORM 9000-PROCEDIMENTOS-FINAIS          END-IF       END-IF    END-IF.
+[522, 522]: 2300-99-FIM.                    EXIT.
+[526, 526]: 2400-ACESSAR-CMCD3AAC           SECTION.
+[529, 530]:     MOVE '2400-ACESSAR-CMCD3AAC'                                TO FRWKGHEA-IDEN-PARAGRAFO.
+[532, 533]:     MOVE CPSSOA-JURID-CONTR     OF CBCDB023                                TO WRK-CPSSOA-JUR-CONTR-S.
+[534, 534]:     MOVE WRK-CPSSOA-JUR-CONTR-R TO CMCDWAAI-CPSSOA-JUR-CONTR-E.
+[535, 536]:     MOVE CTPO-CONTR-NEGOC       OF CBCDB023                                TO WRK-CTPO-CONTR-NEGOC-S.
+[537, 537]:     MOVE WRK-CTPO-CONTR-NEGOC-R TO CMCDWAAI-CTPO-CONTR-NEG-E.
+[538, 539]:     MOVE NSEQ-CONTR-NEGOC       OF CBCDB023                                TO WRK-NSEQ-CONTR-NEGOC-S.
+[540, 540]:     MOVE WRK-NSEQ-CONTR-NEGOC-R TO CMCDWAAI-NSEQ-CONTR-NEG-E.
+[542, 547]:     EXEC CICS LINK         PROGRAM  (WRK-CMCD3AAC)         COMMAREA (WRK-AREA-CMCD3AAC)         LENGTH   (LENGTH OF WRK-AREA-CMCD3AAC)         NOHANDLE    END-EXEC.
+[549, 557]:     IF  EIBRESP                 NOT EQUAL DFHRESP(NORMAL)        MOVE 16                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E150'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0010'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9100-ERRO-CICS    END-IF.
+[560, 560]: 2400-99-FIM.                    EXIT.
+[564, 564]: 2500-ACESSAR-CMCD420A           SECTION.
+[567, 568]:     MOVE '2500-ACESSAR-CMCD420A'                                TO FRWKGHEA-IDEN-PARAGRAFO.
+[570, 571]:     MOVE CMCDWAAI-CPSSOA-JUR-CONTR-S                                TO CMCDW20I-CPSSOA-JURID-CTA.
+[572, 573]:     MOVE CMCDWAAI-CTPO-CONTR-NEG-S                                TO CMCDW20I-CTPO-CONTR-CTA.
+[574, 575]:     MOVE CMCDWAAI-NSEQ-CONTR-NEG-S                                TO CMCDW20I-NSEQ-CONTR-CTA.
+[576, 576]:     MOVE CMCDWQBI-CTPO-CANAL-E  TO CMCDW20I-CTPO-CANAL.
+[577, 577]:     MOVE CMCDWQBI-VLIM-INSTC-A  TO CMCDW20I-VLIM-PGTO-INSTC-A.
+[578, 578]:     MOVE CMCDWQBI-VLIM-OUTRA-A  TO CMCDW20I-VLIM-PGTO-OUTRA-A.
+[579, 580]:     MOVE CMCDWQBI-VLIM-INSTC-CANAL-A                                TO CMCDW20I-VLIM-INSTC-CANAL-A.
+[581, 582]:     MOVE CMCDWQBI-VLIM-OUTRA-CANAL-A                                TO CMCDW20I-VLIM-OUTRA-CANAL-A.
+[583, 583]:     MOVE CMCDWQBI-VLIM-INSTC    TO CMCDW20I-VLIM-PGTO-INSTC.
+[584, 584]:     MOVE CMCDWQBI-VLIM-OUTRA    TO CMCDW20I-VLIM-PGTO-OUTRA.
+[585, 586]:     MOVE CMCDWQBI-VLIM-INSTC-CANAL                                TO CMCDW20I-VLIM-INSTC-CANAL.
+[587, 588]:     MOVE CMCDWQBI-VLIM-OUTRA-CANAL                                TO CMCDW20I-VLIM-OUTRA-CANAL.
+[589, 589]:     MOVE CMCDWQBI-CUSUAR-INCL   TO CMCDW20I-CUSUAR-MANUT.
+[590, 590]:     MOVE CMCDWQBI-HINCL-USUAR   TO CMCDW20I-HMANUT-REG.
+[592, 597]:     EXEC CICS LINK         PROGRAM  (WRK-CMCD420A)         COMMAREA (WRK-AREA-CMCD420A)         LENGTH   (LENGTH OF WRK-AREA-CMCD420A)         NOHANDLE    END-EXEC.
+[599, 607]:     IF  EIBRESP                 NOT EQUAL DFHRESP(NORMAL)        MOVE 16                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E180'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0010'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9100-ERRO-CICS    END-IF.
+[609, 622]:     IF CMCPW000-COD-RETORNO     OF WRK-AREA-CMCD420A                                NOT EQUAL ZEROS       MOVE CMCPW000-COD-RETORNO                                OF WRK-AREA-CMCD420A                                TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA       MOVE 'E190'              TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA       MOVE 'CMCD0008'          TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA    ELSE       MOVE 'CMCD0002'          TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA    END-IF.
+[625, 625]: 2500-99-FIM.                    EXIT.
+[629, 629]: 2600-ACESSAR-CMCD421A           SECTION.
+[632, 633]:     MOVE '2600-ACESSAR-CMCD421A'                                TO FRWKGHEA-IDEN-PARAGRAFO.
+[635, 635]:     MOVE CMCDWQBI-CBCO          TO CMCDW21I-CBCO.
+[636, 636]:     MOVE CMCDWQBI-CAGE          TO CMCDW21I-CAG-BCRIA.
+[637, 637]:     MOVE CMCDWQBI-CCTA          TO CMCDW21I-CCTA-CORR-EXTER.
+[638, 638]:     MOVE CMCDWQBI-CTPO-CANAL-E  TO CMCDW21I-CMIDIA-PGTO-TITLO.
+[640, 641]:     MOVE CMCDWQBI-VLIM-INSTC-CANAL-A                                TO CMCDW21I-VCLI-MIDIA-BDSCO-A.
+[642, 643]:     MOVE CMCDWQBI-VLIM-OUTRA-CANAL-A                                TO CMCDW21I-VCLI-MIDIA-OUTRO-A.
+[644, 644]:     MOVE CMCDWQBI-VLIM-INSTC-A  TO CMCDW21I-VMAX-INDVD-BDSCO-A.
+[645, 646]:     MOVE CMCDWQBI-VLIM-OUTRA-CANAL-A                                TO CMCDW21I-VMAX-INDVD-OUTRO-A.
+[647, 648]:     MOVE CMCDWQBI-VLIM-INSTC-CANAL                                TO CMCDW21I-VCLI-MIDIA-BDSCO.
+[649, 650]:     MOVE CMCDWQBI-VLIM-OUTRA-CANAL                                TO CMCDW21I-VCLI-MIDIA-OUTRO.
+[651, 651]:     MOVE CMCDWQBI-VLIM-INSTC    TO CMCDW21I-VMAX-INDVD-BDSCO.
+[652, 653]:     MOVE CMCDWQBI-VLIM-OUTRA-CANAL                                TO CMCDW21I-VMAX-INDVD-OUTRO.
+[655, 660]:     EXEC CICS LINK         PROGRAM  (WRK-CMCD421A)         COMMAREA (WRK-AREA-CMCD421A)         LENGTH   (LENGTH OF WRK-AREA-CMCD421A)         NOHANDLE    END-EXEC.
+[662, 670]:     IF  EIBRESP                 NOT EQUAL DFHRESP(NORMAL)        MOVE 16                 TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA        MOVE 'E200'             TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA        MOVE 'CMCD0010'         TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA        PERFORM 9100-ERRO-CICS    END-IF.
+[672, 691]:     IF CMCPW000-COD-RETORNO     OF WRK-AREA-CMCD421A                                NOT EQUAL ZEROS       MOVE CMCPW000-COD-RETORNO                                OF WRK-AREA-CMCD421A                                TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA       MOVE 'E210'              TO CMCPW000-COD-ERRO                                OF DFHCOMMAREA       MOVE 'CMCD0008'          TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA    ELSE       MOVE CMCPW000-COD-RETORNO                                OF WRK-AREA-CMCD421A                                TO CMCPW000-COD-RETORNO                                OF DFHCOMMAREA       MOVE CMCPW000-COD-MENSAGEM                                OF WRK-AREA-CMCD421A                                TO CMCPW000-COD-MENSAGEM                                OF DFHCOMMAREA    END-IF.
+[694, 694]: 2600-99-FIM.                    EXIT.
+[698, 698]: 2700-FECHAR-CURSOR              SECTION.
+[701, 701]:     MOVE '2700-FECHAR-CURSOR'    TO FRWKGHEA-IDEN-PARAGRAFO.
+[703, 705]:     EXEC SQL         CLOSE CSR01-CBCDB023    END-EXEC.
+[707, 719]:     IF (SQLCODE                      NOT EQUAL ZEROS) OR       (SQLWARN0                     EQUAL 'W')        SET ERRO-DB2                 TO TRUE        SET DB2-CLOSE                TO TRUE        MOVE 16                      TO CMCPW000-COD-RETORNO                                     OF DFHCOMMAREA        MOVE 'E220'                  TO CMCPW000-COD-ERRO                                     OF DFHCOMMAREA        MOVE 'CMCD0007'              TO CMCPW000-COD-MENSAGEM                                     OF DFHCOMMAREA        MOVE 'TCTA_BCRIA_COBR'       TO FRWKGDB2-NOME-TABELA        PERFORM 9998-TRATAR-ERRO    END-IF.
+[722, 722]: 2700-99-FIM.                    EXIT.
+[726, 726]: 9000-PROCEDIMENTOS-FINAIS       SECTION.
+[729, 731]:     EXEC CICS        RETURN    END-EXEC.
+[734, 734]: 9000-99-FIM.                    EXIT.
+[738, 738]: 9100-ERRO-CICS                  SECTION.
+[741, 741]:     SET  ERRO-CICS              TO TRUE.
+[743, 743]:     MOVE WRK-PROGRAMA           TO FRWKGHEA-NOME-PROGRAMA.
+[744, 745]:     MOVE FRWKGCIC-TAM-LAYOUT    TO FRWKGHEA-TAM-DADOS    MOVE EIBFN                  TO FRWKGCIC-EIBFN.
+[746, 746]:     MOVE EIBRCODE               TO FRWKGCIC-EIBRCODE.
+[747, 747]:     MOVE EIBRSRCE               TO FRWKGCIC-EIBRSRCE.
+[748, 748]:     MOVE EIBRESP                TO FRWKGCIC-EIBRESP.
+[749, 749]:     MOVE EIBRESP2               TO FRWKGCIC-EIBRESP2.
+[750, 750]:     MOVE EIBTASKN               TO FRWKGCIC-EIBTASKN.
+[751, 752]:     MOVE WRK-AREA-ERRO-CICS     TO WRK-BLOCO-INFO-ERRO                                     (1:FRWKGHEA-TAM-DADOS).
+[754, 754]:     PERFORM 9999-CHAMAR-API-ERROS.
+[757, 757]: 9100-99-FIM.                    EXIT.
+[761, 761]: 9300-ERRO-MODULO                SECTION.
+[764, 764]:     SET  ERRO-MODULO            TO TRUE.
+[766, 766]:     MOVE WRK-PROGRAMA           TO FRWKGHEA-NOME-PROGRAMA.
+[767, 767]:     MOVE FRWKGMOD-TAM-LAYOUT    TO FRWKGHEA-TAM-DADOS.
+[768, 769]:     MOVE WRK-AREA-ERRO-MODULO   TO WRK-BLOCO-INFO-ERRO                                     (1:FRWKGHEA-TAM-DADOS).
+[771, 771]:     PERFORM 9999-CHAMAR-API-ERROS.
+[774, 774]: 9300-99-FIM.                    EXIT.
+[778, 778]: 9998-TRATAR-ERRO                SECTION.
+[781, 781]:     MOVE WRK-PROGRAMA           TO FRWKGHEA-NOME-PROGRAMA.
+[783, 794]:     EVALUATE TRUE        WHEN ERRO-DB2            MOVE FRWKGHEA-IDEN-PARAGRAFO(1:16)                                       TO FRWKGDB2-LOCAL            MOVE FRWKGDB2-TAM-LAYOUT   TO FRWKGHEA-TAM-DADOS            MOVE SQLSTATE              TO FRWKGDB2-SQLSTATE            MOVE SQLCA                 TO FRWKGDB2-SQLCA            MOVE WRK-AREA-ERRO-DB2     TO WRK-BLOCO-INFO-ERRO                                          (1:FRWKGHEA-TAM-DADOS)    END-EVALUATE.
+[796, 796]:     PERFORM 9999-CHAMAR-API-ERROS.
+[799, 799]: 9998-99-FIM.                    EXIT.
+[803, 803]: 9999-CHAMAR-API-ERROS           SECTION.
+[806, 811]:     EXEC CICS LINK         PROGRAM (WRK-FRWK1999)         COMMAREA(WRK-AREA-ERRO)         LENGTH(LENGTH OF WRK-AREA-ERRO)         NOHANDLE    END-EXEC.
+[813, 815]:     IF  EIBRESP                 NOT EQUAL DFHRESP(NORMAL)        CONTINUE    END-IF.
+[817, 817]:     PERFORM 9000-PROCEDIMENTOS-FINAIS.
+[820, 820]: 9999-99-FIM.                    EXIT.

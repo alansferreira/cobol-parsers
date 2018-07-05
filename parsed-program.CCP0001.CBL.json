@@ -1,0 +1,330 @@
+{
+  "divisions": [
+    {
+      "sections": [],
+      "statements": [],
+      "STMT_TYPE": "DIVISION",
+      "name": "IDENTIFICATION",
+      "startedAtLine": 2,
+      "endedAtLine": 2,
+      "isDivision": true
+    },
+    {
+      "sections": [
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "CONFIGURATION",
+          "startedAtLine": 45,
+          "endedAtLine": 45
+        }
+      ],
+      "statements": [],
+      "STMT_TYPE": "DIVISION",
+      "name": "ENVIRONMENT",
+      "startedAtLine": 42,
+      "endedAtLine": 42,
+      "isDivision": true
+    },
+    {
+      "sections": [
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "COPY",
+              "hardCodeCopySource": "I#FRWKGE",
+              "startedAtLine": 67,
+              "endedAtLine": 67
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "hardCodeCopySource": "I#FRWKDB",
+              "startedAtLine": 79,
+              "endedAtLine": 79
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "hardCodeCopySource": "I#FRWKCI",
+              "startedAtLine": 86,
+              "endedAtLine": 86
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "hardCodeCopySource": "I#FRWKMD",
+              "startedAtLine": 93,
+              "endedAtLine": 93
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CBCDW00V",
+              "startedAtLine": 100,
+              "endedAtLine": 100
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CBCDWAAI",
+              "startedAtLine": 101,
+              "endedAtLine": 101
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCDWAAI",
+              "startedAtLine": 108,
+              "endedAtLine": 108
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCPW000",
+              "startedAtLine": 115,
+              "endedAtLine": 115
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCDW20I",
+              "startedAtLine": 116,
+              "endedAtLine": 116
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCPW000",
+              "startedAtLine": 123,
+              "endedAtLine": 123
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCDW21I",
+              "startedAtLine": 124,
+              "endedAtLine": 124
+            },
+            {
+              "STMT_TYPE": "EXEC_SQL",
+              "include": "SQLCA",
+              "sqlStatement": "   ",
+              "startedAtLine": 162,
+              "endedAtLine": 164
+            },
+            {
+              "STMT_TYPE": "EXEC_SQL",
+              "include": "CBCDB023",
+              "sqlStatement": "   ",
+              "startedAtLine": 166,
+              "endedAtLine": 168
+            },
+            {
+              "STMT_TYPE": "EXEC_SQL",
+              "sqlStatement": "DECLARE  CSR01-CBCDB023  CURSOR  FOR         SELECT CPSSOA_JURID_CONTR,                CTPO_CONTR_NEGOC  ,                NSEQ_CONTR_NEGOC         FROM DB2PRD.TCTA_BCRIA_COBR         WHERE  CBCO_EXTER_CONTR  = :CBCDB023.CBCO-EXTER-CONTR           AND  CAG_EXTER_CONTR   = :CBCDB023.CAG-EXTER-CONTR           AND  NCTA_EXTER_CONTR  = :CBCDB023.NCTA-EXTER-CONTR   ",
+              "startedAtLine": 175,
+              "endedAtLine": 184
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "WORKING-STORAGE",
+          "startedAtLine": 56,
+          "endedAtLine": 56
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCPW000",
+              "startedAtLine": 195,
+              "endedAtLine": 195
+            },
+            {
+              "STMT_TYPE": "COPY",
+              "variableCopySource": "CMCDWQBI",
+              "startedAtLine": 196,
+              "endedAtLine": 196
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "LINKAGE",
+          "startedAtLine": 192,
+          "endedAtLine": 192
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "0000-ROTINA-PRINCIPAL",
+          "startedAtLine": 203,
+          "endedAtLine": 203
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "1000-PROCEDIMENTOS-INICIAIS",
+          "startedAtLine": 217,
+          "endedAtLine": 217
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_CICS",
+              "programName": "WRK-CBCD3AAC",
+              "startedAtLine": 252,
+              "endedAtLine": 257
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "1100-VALIDAR-SEGURANCA",
+          "startedAtLine": 239,
+          "endedAtLine": 239
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "1200-CONSITIR-ENTRADA",
+          "startedAtLine": 285,
+          "endedAtLine": 285
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "2000-PROCESSAMENTO-PRINCIPAL",
+          "startedAtLine": 405,
+          "endedAtLine": 405
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_SQL",
+              "sqlStatement": "OPEN CSR01-CBCDB023   ",
+              "startedAtLine": 437,
+              "endedAtLine": 439
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "2100-ABRIR-CURSOR",
+          "startedAtLine": 425,
+          "endedAtLine": 425
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_SQL",
+              "sqlStatement": "FETCH  CSR01-CBCDB023          INTO :CBCDB023.CPSSOA-JURID-CONTR,               :CBCDB023.CTPO-CONTR-NEGOC  ,               :CBCDB023.NSEQ-CONTR-NEGOC   ",
+              "startedAtLine": 465,
+              "endedAtLine": 470
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "2200-LER-CURSOR",
+          "startedAtLine": 460,
+          "endedAtLine": 460
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "2300-ALTERACAO-LIMITE",
+          "startedAtLine": 489,
+          "endedAtLine": 489
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_CICS",
+              "programName": "WRK-CMCD3AAC",
+              "startedAtLine": 542,
+              "endedAtLine": 547
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "2400-ACESSAR-CMCD3AAC",
+          "startedAtLine": 526,
+          "endedAtLine": 526
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_CICS",
+              "programName": "WRK-CMCD420A",
+              "startedAtLine": 592,
+              "endedAtLine": 597
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "2500-ACESSAR-CMCD420A",
+          "startedAtLine": 564,
+          "endedAtLine": 564
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_CICS",
+              "programName": "WRK-CMCD421A",
+              "startedAtLine": 655,
+              "endedAtLine": 660
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "2600-ACESSAR-CMCD421A",
+          "startedAtLine": 629,
+          "endedAtLine": 629
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_SQL",
+              "sqlStatement": "CLOSE CSR01-CBCDB023   ",
+              "startedAtLine": 703,
+              "endedAtLine": 705
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "2700-FECHAR-CURSOR",
+          "startedAtLine": 698,
+          "endedAtLine": 698
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "9000-PROCEDIMENTOS-FINAIS",
+          "startedAtLine": 726,
+          "endedAtLine": 726
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "9100-ERRO-CICS",
+          "startedAtLine": 738,
+          "endedAtLine": 738
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "9300-ERRO-MODULO",
+          "startedAtLine": 761,
+          "endedAtLine": 761
+        },
+        {
+          "statements": [],
+          "STMT_TYPE": "SECTION",
+          "name": "9998-TRATAR-ERRO",
+          "startedAtLine": 778,
+          "endedAtLine": 778
+        },
+        {
+          "statements": [
+            {
+              "STMT_TYPE": "EXEC_CICS",
+              "programName": "WRK-FRWK1999",
+              "startedAtLine": 806,
+              "endedAtLine": 811
+            }
+          ],
+          "STMT_TYPE": "SECTION",
+          "name": "9999-CHAMAR-API-ERROS",
+          "startedAtLine": 803,
+          "endedAtLine": 803
+        }
+      ],
+      "statements": [],
+      "STMT_TYPE": "DIVISION",
+      "name": "DATA",
+      "startedAtLine": 51,
+      "endedAtLine": 51,
+      "isDivision": true
+    }
+  ],
+  "statements": []
+}
