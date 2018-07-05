@@ -1,0 +1,94 @@
+[
+  {
+    "type": "FILE_CONTROL"
+  },
+  null,
+  {
+    "type": "SQL",
+    "reference": "DECLARE NEXT_PART CURSOR FOR         SELECT PART_NUM,                PART_QUANT,                PART_ROP,                PART_EOQ         FROM   PART_STOCK         WHERE  PART_ROP > PART_QUANT           AND  PART_NUM > :PART-TABLE         ORDER BY PART_NUM ASC   "
+  },
+  {
+    "type": "SQL",
+    "reference": "DECLARE NEXT_ORDER_LINE CURSOR FOR         SELECT A.ORDER_NUM,                ORDER_LINE,                QUANT_REQ         FROM   PART_ORDLN A,                PART_ORDER B         WHERE  PART_NUM  = :PART-TABLE         AND    LINE_STAT  <> 'C'         AND    A.ORDER_NUM = B.ORDER_NUM         AND    ORDER_TYPE  = 'R'   "
+  },
+  {
+    "type": "SQL",
+    "reference": "WHENEVER SQLERROR GO TO DB-ERROR"
+  },
+  {
+    "type": "SQL",
+    "reference": "WHENEVER SQLWARNING CONTINUE "
+  },
+  {
+    "type": "SQL",
+    "reference": "CONNECT RESET"
+  },
+  {
+    "type": "SQL",
+    "reference": "COMMIT"
+  },
+  {
+    "type": "SQL",
+    "reference": "CONNECT TO :LOCAL-DB"
+  },
+  {
+    "type": "SQL",
+    "reference": "OPEN NEXT_PART"
+  },
+  {
+    "type": "SQL",
+    "reference": "FETCH NEXT_PART         INTO  :PART-TABLE,               :QUANT-TABLE,               :ROP-TABLE,               :EOQ-TABLE   "
+  },
+  {
+    "type": "SQL",
+    "reference": "COMMIT END-EXEC       EXEC SQL CONNECT TO :REMOTE-DB END-EXEC       EXEC SQL OPEN NEXT_ORDER_LINE END-EXEC       PERFORM UNTIL RTCODE2 = 100          EXEC SQL               FETCH NEXT_ORDER_LINE               INTO  :ORD-TABLE,                     :ORL-TABLE,                     :QTY-TABLE          END-EXEC          IF SQLCODE = 100             MOVE 100 TO RTCODE2             EXEC SQL CLOSE NEXT_ORDER_LINE END-EXEC          ELSE             ADD QTY-TABLE TO QTY-REQ             EXEC SQL                  SELECT SUM(QUANT_RECV)                  INTO   :QTY-TABLE:IND-NULL                  FROM   SHIPMENTLN                  WHERE  ORDER_LOC  = :LOC                  AND    ORDER_NUM  = :ORD-TABLE                  AND    ORDER_LINE = :ORL-TABLE            "
+  },
+  {
+    "type": "SQL",
+    "reference": "COMMIT"
+  },
+  {
+    "type": "SQL",
+    "reference": "CONNECT TO :LOCAL-DB"
+  },
+  {
+    "type": "SQL",
+    "reference": "INSERT         INTO    PART_ORDLN                (ORDER_NUM,                 ORDER_LINE,                 PART_NUM,                 QUANT_REQ,                 LINE_STAT)         VALUES (:NEXT-NUM,                 :CONTL,                 :PART-TABLE,                 :EOQ-TABLE,                 'O')   "
+  },
+  {
+    "type": "SQL",
+    "reference": "SELECT (MAX(ORDER_NUM) + 1)         INTO   :NEXT-NUM:IND-NULL         FROM   PART_ORDER   "
+  },
+  {
+    "type": "SQL",
+    "reference": "INSERT         INTO    PART_ORDER                (ORDER_NUM,                 ORIGIN_LOC,                 ORDER_TYPE,                 ORDER_STAT,                 CREAT_TIME)         VALUES (:NEXT-NUM,                 :LOC, 'R', 'O',                 CURRENT TIMESTAMP)      "
+  },
+  {
+    "type": "SQL",
+    "reference": "WHENEVER SQLERROR CONTINUE"
+  },
+  {
+    "type": "SQL",
+    "reference": "ROLLBACK WORK"
+  },
+  {
+    "type": "SQL",
+    "reference": "WHENEVER SQLERROR GO TO DB-ERROR"
+  },
+  {
+    "type": "SQL",
+    "reference": "CONNECT TO :REMOTE-DB"
+  },
+  {
+    "type": "SQL",
+    "reference": "DELETE            FROM    PART_ORDLN            WHERE   ORDER_NUM IN                       (SELECT  ORDER_NUM                        FROM    PART_ORDER                        WHERE   ORDER_TYPE = 'R')      "
+  },
+  {
+    "type": "SQL",
+    "reference": "DELETE            FROM    PART_ORDER            WHERE   ORDER_TYPE = 'R'      "
+  },
+  {
+    "type": "SQL",
+    "reference": "COMMIT"
+  }
+]

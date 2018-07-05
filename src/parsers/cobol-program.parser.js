@@ -294,10 +294,38 @@ function initializeCOBOLProgramParser(){
         return program;
     }
     
+    function extractReferences(parsedProgram){
+        const statements = [];
+        const pushRecursive = (o)=> {
+            statements.push(...o.statements);
+            if(o.divisions) o.divisions.map(pushRecursive);
+            if(o.sections) o.sections.map(pushRecursive);
+        };
+        pushRecursive(parsedProgram);    
+        
+        return statements.map((stmt) => {
+            switch (stmt.STMT_TYPE) {
+                case 'CALL_PROGRAM':
+                    return {type: 'PROGRAM', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
+                case 'COPY':
+                    return {type: 'COPY', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
+                case 'EXEC_CICS':
+                    return {type: 'CICS', reference: (stmt.programName)};
+                case 'EXEC_SQL':
+                    if(stmt.include) break;
+                    return {type: 'SQL', reference: (stmt.sqlStatement)};
+                default:
+                    return {type: stmt.STMT_TYPE, reference: (stmt.sqlStatement)};
+            }
+        });
+
+    }
+
     var cobol_program = {
         parseProgram, 
         parseFilters: regexMap,
         getStatemantIterator,
+        extractReferences
     };
     
    return cobol_program;

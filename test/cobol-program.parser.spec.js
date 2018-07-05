@@ -78,5 +78,17 @@ describe('Read and parse program definitions', function(){
         assert(program.statements.length==23, 'error');
     });
 
+    it('should extract basic external references from a cobol program ', function(){
+        var script = new String(fs.readFileSync('./test/CCP0002.CBL'));
+        
+        var program = programParser.parseProgram(script);
+        var references = programParser.extractReferences(program);
+        
+        fs.writeFileSync('./parsed-program.CCP0002.CBL.references.json', JSON.stringify(references, null, 2));
+        
+        
+        assert(references.length==24, 'error');
+    });
+
 });
 
