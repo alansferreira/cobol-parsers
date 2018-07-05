@@ -310,15 +310,20 @@ function initializeCOBOLProgramParser(){
             switch (stmt.STMT_TYPE) {
                 case 'CALL_PROGRAM':
                     ref = {type: 'programs', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
+                    break;
                 case 'COPY':
                     ref = {type: 'copies', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
+                    break;
                 case 'EXEC_CICS':
                     ref = {type: 'cics', reference: (stmt.programName)};
+                    break;
                 case 'EXEC_SQL':
                     if(stmt.include) return;
                     ref = {type: 'queries', reference: (stmt.sqlStatement)};
+                    break;
                 default:
                     ref = {type: stmt.STMT_TYPE.toLowerCase().replace(/[-_]/g, ''), reference: (stmt.sqlStatement)};
+                    break;
             }
             
             if(!result[ref.type]) result[ref.type] = [];
