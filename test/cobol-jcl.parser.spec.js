@@ -32,6 +32,17 @@ describe('Read and parse program definitions', function(){
         assert(job.statements.length==9, 'error');
     });
 
+    it('should extract basic external references from a jcl program ', function(){
+        var script = new String(fs.readFileSync('./test/JOBSPL01L.JCL'));
+        
+        var parsedJob = jclParser.parseJob(script);
+        var references = jclParser.extractReferences(parsedJob);
+        
+        fs.writeFileSync('./parsed-program.JOBSPL01L.JCL.references.json', JSON.stringify(references, null, 2));
+        
+        
+        assert(references.dd.length==7, 'error');
+    });
 
 });
 

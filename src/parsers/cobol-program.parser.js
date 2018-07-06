@@ -1,182 +1,140 @@
-function initializeCOBOLProgramParser(){
-    /**
-     * @typedef RegexSpec
-     * @prop {RegExp} REGEX
-     * @prop {string} STMT_TYPE
-     * @prop {} CAP_INDEX
-     * @prop {(match: RegExpExecArray, startedAtLine: Number, endedAtLine: Numbwe)} toJson
-     */
+/**
+ * @typedef RegexSpec
+ * @prop {RegExp} REGEX
+ * @prop {string} STMT_TYPE
+ * @prop {} CAP_INDEX
+ * @prop {(match: RegExpExecArray, startedAtLine: Number, endedAtLine: Numbwe)} toJson
+ */
 
-     /**
-      * @typedef ParsedStatement
-      * @prop {string} STMT_TYPE
-      * @prop {number} startedAtLine
-      * @prop {number} endedAtLine
-      * @prop {boolean} isDivision
-      * @prop {boolean} isKeywordSection
-      * @prop {boolean} isCustomSection
-      */
+/**
+ * @typedef ParsedStatement
+ * @prop {string} STMT_TYPE
+ * @prop {number} startedAtLine
+ * @prop {number} endedAtLine
+ * @prop {boolean} isDivision
+ * @prop {boolean} isKeywordSection
+ * @prop {boolean} isCustomSection
+ */
 
 
-    const regexMap = {
-        // IDENTIFICATION_DIVISION: {
-        //     REGEX: / {0,}IDENTIFICATION +DIVISION {0,}\./g,
-        //     STMT_TYPE: 'IDENTIFICATION_DIVISION',
-        //     IS_DIVISION: true,
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.IDENTIFICATION_DIVISION.STMT_TYPE, startedAtLine, endedAtLine, isDivision: true }; }
-        // },
-        // ENVIRONMENT_DIVISION: {
-        //     REGEX: / {0,}ENVIRONMENT +DIVISION {0,}\./g,
-        //     STMT_TYPE: 'ENVIRONMENT_DIVISION',
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.ENVIRONMENT_DIVISION.STMT_TYPE, startedAtLine, endedAtLine, isDivision: true }; }
-        // },
-        // DATA_DIVISION: {
-        //     REGEX: / {0,}DATA +DIVISION {0,}\./g,
-        //     STMT_TYPE: 'DATA_DIVISION',
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.DATA_DIVISION.STMT_TYPE, startedAtLine, endedAtLine, isDivision: true }; }
-        // },
-        // WORKING_STORAGE_DIVISION: {
-        //     REGEX: / {0,}WORKING-STORAGE +DIVISION {0,}\./g,
-        //     STMT_TYPE: 'WORKING_STORAGE_DIVISION',
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.WORKING_STORAGE_DIVISION.STMT_TYPE, startedAtLine, endedAtLine, isDivision: true }; }
-        // },
-        // PROCEDURE_DIVISION: {
-        //     REGEX: / {0,}PROCEDURE +DIVISION {0,}\./g,
-        //     STMT_TYPE: 'PROCEDURE_DIVISION',
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.PROCEDURE_DIVISION.STMT_TYPE, startedAtLine, endedAtLine, isDivision: true }; }
-        // },
-        // CONFIGURATION_SECTION: {
-        //     REGEX: / {0,}CONFIGURATION +SECTION {0,}\./g,
-        //     STMT_TYPE: 'CONFIGURATION_SECTION',
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.CONFIGURATION_SECTION.STMT_TYPE, startedAtLine, endedAtLine, isKeywordSection: true }; }
-        // },
-        // INPUT_OUTPUT_SECTION: {
-        //     REGEX: / {0,}INPUT\-OUTPUT +SECTION {0,}\./g,
-        //     STMT_TYPE: 'INPUT_OUTPUT_SECTION',
-        //     CAP_INDEX: { },
-        //     toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.INPUT_OUTPUT_SECTION.STMT_TYPE, startedAtLine, endedAtLine, isKeywordSection: true }; }
-        // },
-        FILE_CONTROL: {
-            REGEX: / {0,}FILE\-CONTROL {0,}\./g,
-            STMT_TYPE: 'FILE_CONTROL',
-            CAP_INDEX: { },
-            toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.FILE_CONTROL.STMT_TYPE, startedAtLine, endedAtLine }; }
-        },
-        
-        DIVISION: {
-            REGEX: / {0,}([a-zA-Z0-9-#]+) +DIVISION {0,}\./g,
-            STMT_TYPE: 'DIVISION',
-            CAP_INDEX: {
-                NAME: 1
-            },
-            toJson: (match, startedAtLine, endedAtLine) => { 
-                return { 
-                    STMT_TYPE: regexMap.DIVISION.STMT_TYPE, 
-                    name: match[regexMap.DIVISION.CAP_INDEX.NAME], 
-                    startedAtLine, 
-                    endedAtLine, 
-                    isDivision: true 
-                }; 
-            }
-        },
-        SECTION: {
-            REGEX: / {0,}([a-zA-Z0-9-#]+) +SECTION {0,}\./g,
-            STMT_TYPE: 'SECTION',
-            CAP_INDEX: { 
-                NAME: 1 
-            },
-            toJson: (match, startedAtLine, endedAtLine) => { 
-                return { 
-                    STMT_TYPE: regexMap.SECTION.STMT_TYPE, 
-                    name: match[regexMap.SECTION.CAP_INDEX.NAME], 
-                    startedAtLine, 
-                    endedAtLine
-                }; 
-            }
-        },
+const regexMap = {
 
-        COPY: {
-            REGEX: / COPY {1,}(\'([^ ]+)\')?([^ ]+)? ?\./g,
-            STMT_TYPE: 'COPY',
-            CAP_INDEX: { 
-                HARD_CODE_COPY_SOURCE: 2,
-                VARIABLE_COPY_SOURCE: 3,
-            },
-            toJson: (match, startedAtLine, endedAtLine)=>{
-                return {
-                    STMT_TYPE: regexMap.COPY.STMT_TYPE,
-                    hardCodeCopySource: match[regexMap.COPY.CAP_INDEX.HARD_CODE_COPY_SOURCE],
-                    variableCopySource: match[regexMap.COPY.CAP_INDEX.VARIABLE_COPY_SOURCE],
-                    startedAtLine, endedAtLine,
-                }
-            }
+    FILE_CONTROL: {
+        REGEX: / {0,}FILE\-CONTROL {0,}\./g,
+        STMT_TYPE: 'FILE_CONTROL',
+        CAP_INDEX: { },
+        toJson: (match, startedAtLine, endedAtLine) => { return { STMT_TYPE: regexMap.FILE_CONTROL.STMT_TYPE, startedAtLine, endedAtLine }; }
+    },
+    
+    DIVISION: {
+        REGEX: / {0,}([a-zA-Z0-9-#]+) +DIVISION {0,}\./g,
+        STMT_TYPE: 'DIVISION',
+        CAP_INDEX: {
+            NAME: 1
         },
-        EXEC_CICS: {
-            REGEX: / EXEC {1,}CICS {1,}LINK {1,}(PROGRAM {1,}\(([^\)]+)\))?.+ {1,}END\-EXEC/g,
-            STMT_TYPE: 'EXEC_CICS',
-            CAP_INDEX: { 
-                PROGRAM_NAME: 2,
-            },
-            toJson: (match, startedAtLine, endedAtLine)=>{
-                return {
-                    STMT_TYPE: regexMap.EXEC_CICS.STMT_TYPE,
-                    programName: match[regexMap.EXEC_CICS.CAP_INDEX.PROGRAM_NAME],
-                    startedAtLine, endedAtLine,
-                }
-            }
+        toJson: (match, startedAtLine, endedAtLine) => { 
+            return { 
+                STMT_TYPE: regexMap.DIVISION.STMT_TYPE, 
+                name: match[regexMap.DIVISION.CAP_INDEX.NAME], 
+                startedAtLine, 
+                endedAtLine, 
+                isDivision: true 
+            }; 
+        }
+    },
+    SECTION: {
+        REGEX: / {0,}([a-zA-Z0-9-#]+) +SECTION {0,}\./g,
+        STMT_TYPE: 'SECTION',
+        CAP_INDEX: { 
+            NAME: 1 
         },
-        EXEC_SQL: {
-            REGEX: / EXEC {1,}SQL {1,}(INCLUDE {1,}([^ )]+))?(.+) {1,}END\-EXEC/g,
-            STMT_TYPE: 'EXEC_SQL',
-            CAP_INDEX: { 
-                INCLUDE_NAME: 2,
-                SQL_STATEMENT: 3,
-            },
-            toJson: (match, startedAtLine, endedAtLine)=>{
-                return {
-                    STMT_TYPE: regexMap.EXEC_SQL.STMT_TYPE,
-                    include: match[regexMap.EXEC_SQL.CAP_INDEX.INCLUDE_NAME],
-                    sqlStatement: match[regexMap.EXEC_SQL.CAP_INDEX.SQL_STATEMENT],
-                    startedAtLine, endedAtLine,
-                }
-            }
-        },
+        toJson: (match, startedAtLine, endedAtLine) => { 
+            return { 
+                STMT_TYPE: regexMap.SECTION.STMT_TYPE, 
+                name: match[regexMap.SECTION.CAP_INDEX.NAME], 
+                startedAtLine, 
+                endedAtLine
+            }; 
+        }
+    },
 
-        CALL_PROGRAM: {
-            REGEX: / CALL[ ]{1,}('([a-zA-Z0-9-#]+)')?([a-zA-Z0-9-#]+)?( {1,}USING {1,}([a-zA-Z0-9-#']+))?/g,
-            STMT_TYPE: 'CALL_PROGRAM',
-            CAP_INDEX: { 
-                HARD_CODE_PROGRAM_NAME: 2,
-                VARIABLE_PROGRAM_NAME: 3,
-                USING: 5
-            },
-            toJson: (match, startedAtLine, endedAtLine)=>{
-                return {
-                    STMT_TYPE: regexMap.CALL_PROGRAM.STMT_TYPE,
-                    hardCodeProgramName: match[regexMap.CALL_PROGRAM.CAP_INDEX.HARD_CODE_PROGRAM_NAME],
-                    variableProgramName: match[regexMap.CALL_PROGRAM.CAP_INDEX.VARIABLE_PROGRAM_NAME],
-                    usingData: match[regexMap.CALL_PROGRAM.CAP_INDEX.USING],
-                    startedAtLine, endedAtLine,
-                }
+    COPY: {
+        REGEX: / COPY {1,}(\'([^ ]+)\')?([^ ]+)? ?\./g,
+        STMT_TYPE: 'COPY',
+        CAP_INDEX: { 
+            HARD_CODE_COPY_SOURCE: 2,
+            VARIABLE_COPY_SOURCE: 3,
+        },
+        toJson: (match, startedAtLine, endedAtLine)=>{
+            return {
+                STMT_TYPE: regexMap.COPY.STMT_TYPE,
+                hardCodeCopySource: match[regexMap.COPY.CAP_INDEX.HARD_CODE_COPY_SOURCE],
+                variableCopySource: match[regexMap.COPY.CAP_INDEX.VARIABLE_COPY_SOURCE],
+                startedAtLine, endedAtLine,
             }
         }
-    };
+    },
+    EXEC_CICS: {
+        REGEX: / EXEC {1,}CICS {1,}LINK {1,}(PROGRAM {1,}\(([^\)]+)\))?.+ {1,}END\-EXEC/g,
+        STMT_TYPE: 'EXEC_CICS',
+        CAP_INDEX: { 
+            PROGRAM_NAME: 2,
+        },
+        toJson: (match, startedAtLine, endedAtLine)=>{
+            return {
+                STMT_TYPE: regexMap.EXEC_CICS.STMT_TYPE,
+                programName: match[regexMap.EXEC_CICS.CAP_INDEX.PROGRAM_NAME],
+                startedAtLine, endedAtLine,
+            }
+        }
+    },
+    EXEC_SQL: {
+        REGEX: / EXEC {1,}SQL {1,}(INCLUDE {1,}([^ )]+))?(.+) {1,}END\-EXEC/g,
+        STMT_TYPE: 'EXEC_SQL',
+        CAP_INDEX: { 
+            INCLUDE_NAME: 2,
+            SQL_STATEMENT: 3,
+        },
+        toJson: (match, startedAtLine, endedAtLine)=>{
+            return {
+                STMT_TYPE: regexMap.EXEC_SQL.STMT_TYPE,
+                include: match[regexMap.EXEC_SQL.CAP_INDEX.INCLUDE_NAME],
+                sqlStatement: match[regexMap.EXEC_SQL.CAP_INDEX.SQL_STATEMENT],
+                startedAtLine, endedAtLine,
+            }
+        }
+    },
 
-    var regexSpecs = [];
-    for (const key in regexMap) {
-        if (regexMap.hasOwnProperty(key)) {
-            const regexSpec = regexMap[key];
-            regexSpecs.push(regexSpec);
+    CALL_PROGRAM: {
+        REGEX: / CALL[ ]{1,}('([a-zA-Z0-9-#]+)')?([a-zA-Z0-9-#]+)?( {1,}USING {1,}([a-zA-Z0-9-#']+))?/g,
+        STMT_TYPE: 'CALL_PROGRAM',
+        CAP_INDEX: { 
+            HARD_CODE_PROGRAM_NAME: 2,
+            VARIABLE_PROGRAM_NAME: 3,
+            USING: 5
+        },
+        toJson: (match, startedAtLine, endedAtLine)=>{
+            return {
+                STMT_TYPE: regexMap.CALL_PROGRAM.STMT_TYPE,
+                hardCodeProgramName: match[regexMap.CALL_PROGRAM.CAP_INDEX.HARD_CODE_PROGRAM_NAME],
+                variableProgramName: match[regexMap.CALL_PROGRAM.CAP_INDEX.VARIABLE_PROGRAM_NAME],
+                usingData: match[regexMap.CALL_PROGRAM.CAP_INDEX.USING],
+                startedAtLine, endedAtLine,
+            }
         }
     }
+};
+
+var regexSpecs = [];
+for (const key in regexMap) {
+    if (regexMap.hasOwnProperty(key)) {
+        const regexSpec = regexMap[key];
+        regexSpecs.push(regexSpec);
+    }
+}
 
 
+function initializeCOBOLProgramParser(){
 
     function* getStatemantIterator(content){
         const lines = content.replace(/\r\n/g,'\n').replace(/\n\n/g,'\n').split('\n');
@@ -305,27 +263,51 @@ function initializeCOBOLProgramParser(){
         };
         pushRecursive(parsedProgram);    
         
+        const stmtToRef ={
+            'CALL_PROGRAM': (stmt) => {
+                return {
+                    type: 'program',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        programName: (stmt.hardCodeProgramName || stmt.variableProgramName),
+                    }
+                };
+            },
+            'COPY': (stmt) => {
+                return {
+                    type: 'copybook',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        fileName: (stmt.hardCodeCopySource || stmt.variableCopySource),
+                    }
+                };
+            },
+            'EXEC_CICS': (stmt) => {
+                return {
+                    type: 'cics',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        programName: (stmt.programName),
+                    }
+                };
+            },
+            'EXEC_SQL': (stmt) => {
+                return {
+                    type: 'query',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        query: (stmt.sqlStatement),
+                    }
+                };
+            },
+        };
+
         statements.map((stmt) => {
-            let ref = null;
-            switch (stmt.STMT_TYPE) {
-                case 'CALL_PROGRAM':
-                    ref = {type: 'programs', reference: (stmt.hardCodeProgramName || stmt.variableProgramName)};
-                    break;
-                case 'COPY':
-                    ref = {type: 'copies', reference: (stmt.hardCodeCopySource || stmt.variableCopySource)};
-                    break;
-                case 'EXEC_CICS':
-                    ref = {type: 'cics', reference: (stmt.programName)};
-                    break;
-                case 'EXEC_SQL':
-                    if(stmt.include) return;
-                    ref = {type: 'queries', reference: (stmt.sqlStatement)};
-                    break;
-                default:
-                    ref = {type: stmt.STMT_TYPE.toLowerCase().replace(/[-_]/g, ''), reference: (stmt.sqlStatement)};
-                    break;
-            }
-            
+            const convertFn = (stmtToRef[stmt.STMT_TYPE]);
+            if(!convertFn) return ;
+
+            let ref = convertFn(stmt);
+
             if(!result[ref.type]) result[ref.type] = [];
             result[ref.type].push(ref);
         });

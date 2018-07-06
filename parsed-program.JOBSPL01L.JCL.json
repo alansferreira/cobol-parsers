@@ -1,23 +1,12 @@
 {
   "statements": [
     {
-      "STMT_TYPE": "JOB",
-      "labelName": 1,
-      "command": "JOB",
-      "commandArgs": "(META007),'PAWAN Y',CLASS=A,MSGCLASS=L,MSGLEVEL=(1,1),TIME=1440,NOTIFY=&SYSUID",
+      "STMT_TYPE": "JOB_COMMAND",
+      "jobName": "META007",
+      "programerName": "PAWAN Y",
+      "commandArgs": "CLASS=A,MSGCLASS=L,MSGLEVEL=(1,1),TIME=1440,NOTIFY=&SYSUID",
       "startedAtLine": 1,
-      "endedAtLine": 2,
-      "parsedArgs": [
-        {
-          "CLASS": "A"
-        },
-        {
-          "MSGCLASS": "L"
-        },
-        {
-          "TIME": "1440"
-        }
-      ]
+      "endedAtLine": 2
     },
     {
       "STMT_TYPE": "DD",
@@ -26,14 +15,10 @@
       "commandArgs": "DSN=MTHUSER.MY.LOADLIB,DISP=SHR",
       "startedAtLine": 4,
       "endedAtLine": 4,
-      "parsedArgs": [
-        {
-          "DSN": "MTHUSER.MY.LOADLIB"
-        },
-        {
-          "DISP": "SHR"
-        }
-      ]
+      "parsedArgs": {
+        "DSN": "MTHUSER.MY.LOADLIB",
+        "DISP": "SHR"
+      }
     },
     {
       "STMT_TYPE": "EXEC",
@@ -42,11 +27,9 @@
       "commandArgs": "PGM=EXAMPROG",
       "startedAtLine": 8,
       "endedAtLine": 8,
-      "parsedArgs": [
-        {
-          "PGM": "EXAMPROG"
-        }
-      ]
+      "parsedArgs": {
+        "PGM": "EXAMPROG"
+      }
     },
     {
       "STMT_TYPE": "DD",
@@ -55,14 +38,10 @@
       "commandArgs": "DSN=MTHUSER.TEST.LOADLIB,DISP=SHR",
       "startedAtLine": 9,
       "endedAtLine": 9,
-      "parsedArgs": [
-        {
-          "DSN": "MTHUSER.TEST.LOADLIB"
-        },
-        {
-          "DISP": "SHR"
-        }
-      ]
+      "parsedArgs": {
+        "DSN": "MTHUSER.TEST.LOADLIB",
+        "DISP": "SHR"
+      }
     },
     {
       "STMT_TYPE": "DD",
@@ -71,14 +50,10 @@
       "commandArgs": "DSN=MTHUSER.EXAMPROG.INPUT,DISP=SHR",
       "startedAtLine": 10,
       "endedAtLine": 10,
-      "parsedArgs": [
-        {
-          "DSN": "MTHUSER.EXAMPROG.INPUT"
-        },
-        {
-          "DISP": "SHR"
-        }
-      ]
+      "parsedArgs": {
+        "DSN": "MTHUSER.EXAMPROG.INPUT",
+        "DISP": "SHR"
+      }
     },
     {
       "STMT_TYPE": "DD",
@@ -87,31 +62,13 @@
       "commandArgs": "DSN=MTHUSER.EXAMPROG.OUTPUT,DISP=(NEW,CATLG,DELETE),UNIT=(SYSDA,20),SPACE=(CYL,(50,25)),DCB=(RECFM=FB,LRECL=80,BLKSIZE=0,BUFNO=2)",
       "startedAtLine": 11,
       "endedAtLine": 15,
-      "parsedArgs": [
-        {
-          "DSN": "MTHUSER.EXAMPROG.OUTPUT"
-        },
-        {
-          "RECFM": "FB"
-        },
-        {
-          "LRECL": "80"
-        },
-        {
-          "BLKSIZE": "0"
-        },
-        {
-          "BUFNO": "2"
-        },
-        {
-          "DCB": {
-            "RECFM": "FB",
-            "LRECL": "80",
-            "BLKSIZE": "0",
-            "BUFNO": "2"
-          }
-        }
-      ]
+      "parsedArgs": {
+        "DSN": "MTHUSER.EXAMPROG.OUTPUT",
+        "RECFM": "FB",
+        "LRECL": "80",
+        "BLKSIZE": "0",
+        "BUFNO": "2"
+      }
     },
     {
       "STMT_TYPE": "DD",
@@ -120,11 +77,9 @@
       "commandArgs": "SYSOUT=*",
       "startedAtLine": 17,
       "endedAtLine": 17,
-      "parsedArgs": [
-        {
-          "SYSOUT": "*"
-        }
-      ]
+      "parsedArgs": {
+        "SYSOUT": "*"
+      }
     },
     {
       "STMT_TYPE": "DD",
@@ -133,11 +88,9 @@
       "commandArgs": "SYSOUT=*",
       "startedAtLine": 18,
       "endedAtLine": 18,
-      "parsedArgs": [
-        {
-          "SYSOUT": "*"
-        }
-      ]
+      "parsedArgs": {
+        "SYSOUT": "*"
+      }
     },
     {
       "STMT_TYPE": "DD",
@@ -146,11 +99,9 @@
       "commandArgs": "SYSOUT=*",
       "startedAtLine": 19,
       "endedAtLine": 19,
-      "parsedArgs": [
-        {
-          "SYSOUT": "*"
-        }
-      ]
+      "parsedArgs": {
+        "SYSOUT": "*"
+      }
     }
   ]
 }

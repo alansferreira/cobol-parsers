@@ -25,7 +25,39 @@ function initializeCOBOLProgramParser(){
      * @prop {any[]} args
      */
 
-    const regexMap = {        
+    const regexMap = {
+        JOB_COMMAND: {
+            REGEX: /\(?([a-zA-Z0-9#-]+)\)?,?(\'([a-zA-Z0-9#\#\- ]+)\'),?(.+)/gi,
+            STMT_TYPE: 'JOB_COMMAND',
+            CAP_INDEX: {
+                JOB_NAME: 1,
+                PROGRAMER_NAME: 3,
+                COMMAND_ARGS: 4
+            },
+            toJson: (match, startedAtLine, endedAtLine) => { 
+                const json = { 
+                    STMT_TYPE: regexMap.JOB_COMMAND.STMT_TYPE, 
+                    jobName: match[regexMap.JOB_COMMAND.CAP_INDEX.JOB_NAME], 
+                    programerName: match[regexMap.JOB_COMMAND.CAP_INDEX.PROGRAMER_NAME], 
+                    commandArgs: match[regexMap.JOB_COMMAND.CAP_INDEX.COMMAND_ARGS], 
+                    startedAtLine, 
+                    endedAtLine, 
+                }; 
+
+                // for (const key in regexMap.JOB_COMMAND.PARAMS) {
+                //     if (!regexMap.JOB_COMMAND.PARAMS.hasOwnProperty(key)) continue ;
+                    
+                //     const subExpr = regexMap.JOB_COMMAND.PARAMS[key];
+                //     const fetched = fetchAllMarches(subExpr,json.commandArgs).filter((s)=> s !== undefined && s !== null);
+                //     if(!fetched || !fetched.length) continue;
+                    
+                //     json.parsedArgs.push(...fetched);
+                // }
+            
+                return json; 
+
+            }
+        },
         GENERIC_COMMAND: {
             REGEX: /^([a-zA-Z0-9#$%]+)[ ]{1,}([a-zA-Z]+)[ ]{1,}(.+)/gi,
             STMT_TYPE: 'GENERIC_COMMAND',
@@ -45,7 +77,7 @@ function initializeCOBOLProgramParser(){
                     commandArgs: match[regexMap.GENERIC_COMMAND.CAP_INDEX.COMMAND_ARGS], 
                     startedAtLine, 
                     endedAtLine,
-                    parsedArgs: []
+                    parsedArgs: {}
                 };
                 
                 for (const key in regexMap.GENERIC_COMMAND.PARAMS) {
@@ -55,7 +87,9 @@ function initializeCOBOLProgramParser(){
                     const fetched = fetchAllMarches(subExpr,json.commandArgs).filter((s)=> s !== undefined && s !== null);
                     if(!fetched || !fetched.length) continue;
                     
-                    json.parsedArgs.push(...fetched);
+                    fetched.map((f) => {
+                        json.parsedArgs[f.name] = f.value;    
+                    });
                 }
             
 
@@ -70,7 +104,8 @@ function initializeCOBOLProgramParser(){
                     toJson: (match) => {
                         const capIndex = regexMap.GENERIC_COMMAND.PARAMS.GENERIC_SIMPLE.CAP_INDEX;
                         const ret = {};
-                        ret[match[capIndex.NAME]] = match[capIndex.VALUE];
+                        ret.name = match[capIndex.NAME];
+                        ret.value = match[capIndex.VALUE];
                         return ret;
                     }
                 },
@@ -86,8 +121,8 @@ function initializeCOBOLProgramParser(){
                             || match[capIndex.SIMPLE_VALUE]);
                         
                         try {
-                            
-                            ret[match[capIndex.NAME]] = args.replace(/[ ]{0,},?[ ]{0,}([a-zA-Z]+)/gi, '$1,').split(',');
+                            ret.name = match[capIndex.NAME];
+                            ret.value = args.replace(/[ ]{0,},?[ ]{0,}([a-zA-Z]+)/gi, '$1,').split(',');
                         } catch (error) {
                             console.error(error);
                         }
@@ -117,25 +152,6 @@ function initializeCOBOLProgramParser(){
                 },
             },
         },
-        JOB_COMMAND: {
-            REGEX: /^([a-zA-Z0-9#$%]+)[ ]{1,}([a-zA-Z0-9#$%]+)[ ]{1,}(.+)/g,
-            STMT_TYPE: 'JOB_COMMAND',
-            CAP_INDEX: {
-                LABEL_NAME: 1,
-                COMMAND: 2,
-                COMMAND_ARGS: 3
-            },
-            toJson: (match, startedAtLine, endedAtLine) => { 
-                return { 
-                    STMT_TYPE: regexMap.JOB_COMMAND.STMT_TYPE, 
-                    labelName: regexMap.JOB_COMMAND.CAP_INDEX.LABEL_NAME, 
-                    command: match[regexMap.JOB_COMMAND.CAP_INDEX.COMMAND], 
-                    commandArgs: match[regexMap.JOB_COMMAND.CAP_INDEX.COMMAND_ARGS], 
-                    startedAtLine, 
-                    endedAtLine, 
-                }; 
-            }
-        }
     };
 
     var regexSpecs = [];
@@ -263,10 +279,66 @@ function initializeCOBOLProgramParser(){
         return job;
     }
     
+    function extractReferences(parsedJob){
+        const statements = [];
+        const result = {};
+
+        const pushRecursive = (o)=> {
+            statements.push(...o.statements);
+            // if(o.divisions) o.divisions.map(pushRecursive);
+            // if(o.sections) o.sections.map(pushRecursive);
+        };
+        pushRecursive(parsedJob);    
+        
+        const stmtToRef ={
+            'JOB_COMMAND': (stmt) => {
+                return {
+                    type: 'job',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        jobName: stmt.jobName,
+                        programerName: stmt.programerName
+                    }
+                };
+            },
+            'DD': (stmt) => {
+                return {
+                    type: 'dd',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        datasetName: (stmt.parsedArgs.DSN || stmt.parsedArgs.DSNANE)
+                    }
+                };
+            },
+            'EXEC': (stmt) => {
+                return {
+                    type: 'program',
+                    startedAtLine: stmt.startedAtLine,
+                    reference: {
+                        program: (stmt.parsedArgs.PGM)
+                    }
+                };
+            },
+        };
+
+        statements.map((stmt) => {
+            const convertFn = (stmtToRef[stmt.STMT_TYPE] || stmtToRef['default']);
+            if(!convertFn) return ;
+
+            let ref = convertFn(stmt);
+
+            if(!result[ref.type]) result[ref.type] = [];
+            result[ref.type].push(ref);
+        });
+
+        return result;
+    }
+    
     var cobol_program = {
         parseJob, 
         parseFilters: regexMap,
         getStatementIterator,
+        extractReferences
     };
     
    return cobol_program;

@@ -1,0 +1,176 @@
+{
+  "copybook": [
+    {
+      "type": "copybook",
+      "startedAtLine": 67,
+      "reference": {
+        "fileName": "I#FRWKGE"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 79,
+      "reference": {
+        "fileName": "I#FRWKDB"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 86,
+      "reference": {
+        "fileName": "I#FRWKCI"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 93,
+      "reference": {
+        "fileName": "I#FRWKMD"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 100,
+      "reference": {
+        "fileName": "CBCDW00V"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 101,
+      "reference": {
+        "fileName": "CBCDWAAI"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 108,
+      "reference": {
+        "fileName": "CMCDWAAI"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 115,
+      "reference": {
+        "fileName": "CMCPW000"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 116,
+      "reference": {
+        "fileName": "CMCDW20I"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 123,
+      "reference": {
+        "fileName": "CMCPW000"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 124,
+      "reference": {
+        "fileName": "CMCDW21I"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 195,
+      "reference": {
+        "fileName": "CMCPW000"
+      }
+    },
+    {
+      "type": "copybook",
+      "startedAtLine": 196,
+      "reference": {
+        "fileName": "CMCDWQBI"
+      }
+    }
+  ],
+  "query": [
+    {
+      "type": "query",
+      "startedAtLine": 162,
+      "reference": {
+        "query": "   "
+      }
+    },
+    {
+      "type": "query",
+      "startedAtLine": 166,
+      "reference": {
+        "query": "   "
+      }
+    },
+    {
+      "type": "query",
+      "startedAtLine": 175,
+      "reference": {
+        "query": "DECLARE  CSR01-CBCDB023  CURSOR  FOR         SELECT CPSSOA_JURID_CONTR,                CTPO_CONTR_NEGOC  ,                NSEQ_CONTR_NEGOC         FROM DB2PRD.TCTA_BCRIA_COBR         WHERE  CBCO_EXTER_CONTR  = :CBCDB023.CBCO-EXTER-CONTR           AND  CAG_EXTER_CONTR   = :CBCDB023.CAG-EXTER-CONTR           AND  NCTA_EXTER_CONTR  = :CBCDB023.NCTA-EXTER-CONTR   "
+      }
+    },
+    {
+      "type": "query",
+      "startedAtLine": 437,
+      "reference": {
+        "query": "OPEN CSR01-CBCDB023   "
+      }
+    },
+    {
+      "type": "query",
+      "startedAtLine": 465,
+      "reference": {
+        "query": "FETCH  CSR01-CBCDB023          INTO :CBCDB023.CPSSOA-JURID-CONTR,               :CBCDB023.CTPO-CONTR-NEGOC  ,               :CBCDB023.NSEQ-CONTR-NEGOC   "
+      }
+    },
+    {
+      "type": "query",
+      "startedAtLine": 703,
+      "reference": {
+        "query": "CLOSE CSR01-CBCDB023   "
+      }
+    }
+  ],
+  "cics": [
+    {
+      "type": "cics",
+      "startedAtLine": 252,
+      "reference": {
+        "programName": "WRK-CBCD3AAC"
+      }
+    },
+    {
+      "type": "cics",
+      "startedAtLine": 542,
+      "reference": {
+        "programName": "WRK-CMCD3AAC"
+      }
+    },
+    {
+      "type": "cics",
+      "startedAtLine": 592,
+      "reference": {
+        "programName": "WRK-CMCD420A"
+      }
+    },
+    {
+      "type": "cics",
+      "startedAtLine": 655,
+      "reference": {
+        "programName": "WRK-CMCD421A"
+      }
+    },
+    {
+      "type": "cics",
+      "startedAtLine": 806,
+      "reference": {
+        "programName": "WRK-FRWK1999"
+      }
+    }
+  ]
+}

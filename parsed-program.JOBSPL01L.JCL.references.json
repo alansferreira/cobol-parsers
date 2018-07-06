@@ -1,0 +1,66 @@
+{
+  "job": [
+    {
+      "type": "job",
+      "startedAtLine": 1,
+      "reference": {
+        "jobName": "META007",
+        "programerName": "PAWAN Y"
+      }
+    }
+  ],
+  "dd": [
+    {
+      "type": "dd",
+      "startedAtLine": 4,
+      "reference": {
+        "datasetName": "MTHUSER.MY.LOADLIB"
+      }
+    },
+    {
+      "type": "dd",
+      "startedAtLine": 9,
+      "reference": {
+        "datasetName": "MTHUSER.TEST.LOADLIB"
+      }
+    },
+    {
+      "type": "dd",
+      "startedAtLine": 10,
+      "reference": {
+        "datasetName": "MTHUSER.EXAMPROG.INPUT"
+      }
+    },
+    {
+      "type": "dd",
+      "startedAtLine": 11,
+      "reference": {
+        "datasetName": "MTHUSER.EXAMPROG.OUTPUT"
+      }
+    },
+    {
+      "type": "dd",
+      "startedAtLine": 17,
+      "reference": {}
+    },
+    {
+      "type": "dd",
+      "startedAtLine": 18,
+      "reference": {}
+    },
+    {
+      "type": "dd",
+      "startedAtLine": 19,
+      "reference": {}
+    }
+  ],
+  "program": [
+    {
+      "type": "program",
+      "startedAtLine": 8,
+      "reference": {
+        "program": "EXAMPROG"
+      }
+    }
+  ]
+}
