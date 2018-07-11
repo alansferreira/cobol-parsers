@@ -165,7 +165,7 @@ function initializeCOBOLProgramParser(){
 
 
     function* getStatementIterator(content){
-        const lines = content.replace(/\r\n/g,'\n').replace(/\n\n/g,'\n').split('\n');
+        const lines = content.replace(/\r\n/g,'\n').split('\n');
         var statement = '';
         var startedAtLine;
 

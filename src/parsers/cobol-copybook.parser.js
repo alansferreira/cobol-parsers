@@ -237,7 +237,7 @@ function initializeCOBOLCopybookParser(){
     }
 
     function* getStatemantIterator(content){
-        const lines = content.replace(/\r\n/g,'\n').replace(/\n\n/g,'\n').split('\n');
+        const lines = content.replace(/\r\n/g,'\n').split('\n');
         var statement = '';
         for (let l = 0; l < lines.length; l++) {
             const line = '' + lines[l].replace(/ +$/g, ''); //rtrim

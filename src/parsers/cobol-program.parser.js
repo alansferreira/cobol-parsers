@@ -137,7 +137,7 @@ for (const key in regexMap) {
 function initializeCOBOLProgramParser(){
 
     function* getStatemantIterator(content){
-        const lines = content.replace(/\r\n/g,'\n').replace(/\n\n/g,'\n').split('\n');
+        const lines = content.replace(/\r\n/g,'\n').split('\n');
         var statement = '';
         var startedAtLine;
         for (let l = 0; l < lines.length; l++) {
