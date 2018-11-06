@@ -1,4 +1,4 @@
-function initializeCOBOLProgramParser(){
+function initializeJCLParser(){
     /**
      * @typedef RegexSpec
      * @prop {RegExp} REGEX
@@ -345,5 +345,5 @@ function initializeCOBOLProgramParser(){
 };
 
 if(typeof module !== "undefined") {
-    module.exports = initializeCOBOLProgramParser();
+    module.exports = initializeJCLParser();
 }
