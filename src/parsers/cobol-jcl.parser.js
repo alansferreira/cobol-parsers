@@ -72,7 +72,7 @@ function initializeJCLParser(){
             toJson: (match, startedAtLine, endedAtLine) => { 
                 const json = { 
                     STMT_TYPE: match[regexMap.GENERIC_COMMAND.CAP_INDEX.COMMAND], 
-                    labelName: regexMap.GENERIC_COMMAND.CAP_INDEX.LABEL_NAME, 
+                    labelName: match[regexMap.GENERIC_COMMAND.CAP_INDEX.LABEL_NAME], 
                     command: match[regexMap.GENERIC_COMMAND.CAP_INDEX.COMMAND], 
                     commandArgs: match[regexMap.GENERIC_COMMAND.CAP_INDEX.COMMAND_ARGS], 
                     startedAtLine, 
