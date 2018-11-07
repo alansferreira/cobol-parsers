@@ -1,6 +1,6 @@
 {
   "name": "cobol-parsers",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "COBOL Structures Parsers",
   "main": "./src/index.js",
   "scripts": {},

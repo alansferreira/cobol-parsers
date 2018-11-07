@@ -27,16 +27,18 @@ function initializeJCLParser(){
 
     const regexMap = {
         JOB_COMMAND: {
-            REGEX: /\(?([a-zA-Z0-9#-]+)\)?,?(\'([a-zA-Z0-9#\#\- ]+)\'),?(.+)/gi,
+            REGEX: /^([a-zA-Z0-9#$%]+)[ ]{1,}JOB[ ]{0,}\(?([a-zA-Z0-9#-]+)\)?,?(\'([a-zA-Z0-9#\#\- ]+)\'),?(.+)/gi,
             STMT_TYPE: 'JOB_COMMAND',
             CAP_INDEX: {
-                JOB_NAME: 1,
-                PROGRAMER_NAME: 3,
-                COMMAND_ARGS: 4
+                LABEL_NAME: 1,
+                JOB_NAME: 2,
+                PROGRAMER_NAME: 4,
+                COMMAND_ARGS: 5
             },
             toJson: (match, startedAtLine, endedAtLine) => { 
                 const json = { 
                     STMT_TYPE: regexMap.JOB_COMMAND.STMT_TYPE, 
+                    labelName: match[regexMap.GENERIC_COMMAND.CAP_INDEX.LABEL_NAME], 
                     jobName: match[regexMap.JOB_COMMAND.CAP_INDEX.JOB_NAME], 
                     programerName: match[regexMap.JOB_COMMAND.CAP_INDEX.PROGRAMER_NAME], 
                     commandArgs: match[regexMap.JOB_COMMAND.CAP_INDEX.COMMAND_ARGS], 
@@ -205,6 +207,7 @@ function initializeJCLParser(){
         for (let m = 0; m < matchFilters.length; m++) {
             const regexSpec = matchFilters[m];
             const regex = regexSpec.REGEX;
+            regex.lastIndex = -1;
             if( !regex.test(stmt) ) continue;
             
             const fetched = fetchAllMarches(regexSpec, stmt, startedAtLine, endedAtLine).filter((s)=> s !== undefined && s !== null);
