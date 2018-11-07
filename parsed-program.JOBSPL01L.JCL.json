@@ -10,7 +10,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "JOBLIB",
       "command": "DD",
       "commandArgs": "DSN=MTHUSER.MY.LOADLIB,DISP=SHR",
       "startedAtLine": 4,
@@ -22,7 +22,7 @@
     },
     {
       "STMT_TYPE": "EXEC",
-      "labelName": 1,
+      "labelName": "STEP01",
       "command": "EXEC",
       "commandArgs": "PGM=EXAMPROG",
       "startedAtLine": 8,
@@ -33,7 +33,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "STEPLIB",
       "command": "DD",
       "commandArgs": "DSN=MTHUSER.TEST.LOADLIB,DISP=SHR",
       "startedAtLine": 9,
@@ -45,7 +45,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "INPFILE",
       "command": "DD",
       "commandArgs": "DSN=MTHUSER.EXAMPROG.INPUT,DISP=SHR",
       "startedAtLine": 10,
@@ -57,7 +57,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "OUTFILE",
       "command": "DD",
       "commandArgs": "DSN=MTHUSER.EXAMPROG.OUTPUT,DISP=(NEW,CATLG,DELETE),UNIT=(SYSDA,20),SPACE=(CYL,(50,25)),DCB=(RECFM=FB,LRECL=80,BLKSIZE=0,BUFNO=2)",
       "startedAtLine": 11,
@@ -72,7 +72,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "SYSPRINT",
       "command": "DD",
       "commandArgs": "SYSOUT=*",
       "startedAtLine": 17,
@@ -83,7 +83,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "SYSUDUMP",
       "command": "DD",
       "commandArgs": "SYSOUT=*",
       "startedAtLine": 18,
@@ -94,7 +94,7 @@
     },
     {
       "STMT_TYPE": "DD",
-      "labelName": 1,
+      "labelName": "SYSOUT",
       "command": "DD",
       "commandArgs": "SYSOUT=*",
       "startedAtLine": 19,

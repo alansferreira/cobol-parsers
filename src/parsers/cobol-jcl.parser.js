@@ -315,7 +315,7 @@ function initializeJCLParser(){
                     type: 'program',
                     startedAtLine: stmt.startedAtLine,
                     reference: {
-                        program: (stmt.parsedArgs.PGM)
+                        program: (stmt.parsedArgs.PGM || stmt.commandArgs)
                     }
                 };
             },
