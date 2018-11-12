@@ -221,6 +221,9 @@ function initializeCOBOLCopybookParser(){
                 break;
         }
 
+        fieldObject.alternativeNames = [];
+        fieldObject.fixedValues = [];
+
         if(!fieldObject) return fieldObject;
 
 
@@ -291,10 +294,10 @@ function initializeCOBOLCopybookParser(){
                 if(newField.logicalLevel > lastField.logicalLevel){
                     switch (newField.logicalLevel) {
                         case 66:
-                            currentParent.alternativeNames.push(newField);
+                            lastField.alternativeNames.push(newField);
                             continue;
                         case 88:
-                            currentParent.fixedValues.push(newField);
+                            lastField.fixedValues.push(newField);
                             continue;
                     }
                 }

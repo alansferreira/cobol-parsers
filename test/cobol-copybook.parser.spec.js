@@ -29,7 +29,7 @@ describe('Read and parse copybook definitions', function(){
         fs.writeFileSync('./parsed-book.CCP0001.CPY.json', JSON.stringify(book, null, 2));
         
         
-        assert(book.length==83, 'error');
+        assert(book.length==71, 'error');
     });
 
 
