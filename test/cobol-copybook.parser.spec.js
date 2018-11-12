@@ -7,16 +7,16 @@ describe('Read and parse copybook definitions', function(){
         var script = new String(fs.readFileSync('./test/CCP0001.CPY'));
         
         var sttIterator = cpyParser.getStatemantIterator(script);
-        var statement = {done: false};
+        var iteratee = {done: false};
         var countStatements = 0;
         var countStatementsWithDot = 0;
         fs.writeFileSync('./readed-statements.CCP0001.CPY.txt', '');
-        while( statement.done==false ){
-            statement = sttIterator.next();
-            if(statement.value === undefined) continue;
+        while( iteratee.done==false ){
+            iteratee = sttIterator.next();
+            if(iteratee.value === undefined) continue;
             countStatements++;
-            countStatementsWithDot += (statement.value.endsWith('.') ? 1: 0);
-            fs.appendFileSync('./readed-statements.CCP0001.CPY.txt', statement.value + '\n');
+            countStatementsWithDot += (iteratee.value.statement.endsWith('.') ? 1: 0);
+            fs.appendFileSync('./readed-statements.CCP0001.CPY.txt', iteratee.value + '\n');
         }
         assert(countStatements === countStatementsWithDot, 'error');
     });

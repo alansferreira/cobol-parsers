@@ -115,7 +115,7 @@ function initializeCOBOLCopybookParser(){
     }
 
 
-    function parseStatemant(statement){
+    function parseStatemant(statement, startedAtLine, endedAtLine){
         const stmType = matchStatement(statement);
         if(!stmType) return;
         var  m;
@@ -220,7 +220,9 @@ function initializeCOBOLCopybookParser(){
             default:
                 break;
         }
-
+        fieldObject.startedAtLine = startedAtLine;
+        fieldObject.endedAtLine = endedAtLine;
+        
         fieldObject.alternativeNames = [];
         fieldObject.fixedValues = [];
 
@@ -242,22 +244,28 @@ function initializeCOBOLCopybookParser(){
     function* getStatemantIterator(content){
         const lines = content.replace(/\r\n/g,'\n').split('\n');
         var statement = '';
+        var startedAtLine;
         for (let l = 0; l < lines.length; l++) {
             const line = '' + lines[l].replace(/ +$/g, ''); //rtrim
             if(line.length < 7) continue;
             if(line.substr(6, 1) != ' ') continue;
-
+            
+            if(statement == '') startedAtLine = l + 1;
             statement += line.substring(7);
             if(!line.endsWith('.')) continue;
 
-            yield statement;
+            yield {
+                statement,
+                startedAtLine,
+                endedAtLine: l + 1
+            };
             statement = '';
         }
     }
 
     function parseBook(content, importCopyCallback){
         var sttIterator = getStatemantIterator(content);
-        var statement = {done: false};
+        var iteratee = {done: false};
         var statements = [];
 
         var book = [];
@@ -265,11 +273,13 @@ function initializeCOBOLCopybookParser(){
         var currentParent;
         var rootFields = [];
 
-        while( statement.done == false ){
-            statement = sttIterator.next();
-            if(statement.value === undefined) continue;
+        while( iteratee.done == false ){
+            iteratee = sttIterator.next();
+            if(iteratee.value === undefined) continue;
+            
+            var {statement, startedAtLine, endedAtLine} = iteratee.value;
 
-            var newField = parseStatemant(statement.value);
+            var newField = parseStatemant(statement, startedAtLine, endedAtLine);
             if(!newField ) continue;
             if(newField.type == regexes.IMPORT_COPY.FIELD_TYPE){
                 // if(importCopyCallback){
