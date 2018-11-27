@@ -1,74 +1,32 @@
 var regexes = {
     GROUP_ITEM: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+)( {0,}VALUE {0,}(.+))?( {0,}OCCURS +([0-9]+) +TO +([0-9]+) +TIMES)?( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))? {0,}\./,
+        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+)( {0,}VALUE {1,}([^ ]+))?( {1,}OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\.?/,
         FIELD_TYPE: 'GROUP_ITEM',
         CAP_INDEX: { 
             LEVEL: 1,
             NAME: 2,
-            OCCURS_MIN: 4, 
-            OCCURS_MAX: 5,
-            DEPENDING_ON: 7
-        }
-    },
-    PICX: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+) +PIC +X {0,}\(([0-9]+)\)( {0,}VALUE {0,}(.+))?( {0,}OCCURS +([0-9]+) +TO +([0-9]+) +TIMES)?( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))? {0,}\./, 
-        FIELD_TYPE: 'PICX',
-        CAP_INDEX: { 
-            LEVEL: 1, 
-            NAME: 2, 
-            SIZE: 3, 
-            DEFAULT_VALUE: 5,
-            OCCURS_MIN: 7, 
+            VALUE: 4,
+            OCCURS_MIN: 6, 
             OCCURS_MAX: 8,
-            DEPENDING_ON: 10
+            DEPENDING_ON: 11
         }
     },
-    PIC9: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+) +PIC +9 {0,}\(([0-9]+)\)(V([0-9]+))? {0,}(COMP(-([1-3]))? {0,})?( {0,}VALUE {0,}(.+))?( {0,}OCCURS +([0-9]+) +TO +([0-9]+) +TIMES)?( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))? {0,}\./, 
-        FIELD_TYPE: 'PIC9',
-        CAP_INDEX: { 
-            LEVEL: 1, 
-            NAME: 2, 
-            SIZE: 3, 
-            DECIMALS: 5,
-            HAS_COMPRESSION: 6,
-            COMPRESSION_LEVEL: 8, 
-            DEFAULT_VALUE: 10,
-            OCCURS_MIN: 12, 
-            OCCURS_MAX: 13,
-            DEPENDING_ON: 15
-        }
-    },
-    PICS9: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+) +PIC +S9 {0,}\(([0-9]+)\)(V([0-9]+))? {0,}(COMP(-([1-3]))? {0,})?( {0,}VALUE {0,}(.+))?( {0,}OCCURS +([0-9]+) +TO +([0-9]+) +TIMES)?( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))? {0,}\./,
+    GENERIC_PIC: {
+        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+) +PIC +([\+9]?[\-9]?[sS9]?[xX]??[aA]?[9]?) {0,}\(([0-9]+)\)(V([0-9]+)( {0,}\(([0-9]+)\))?)? {0,}(COMP(-([1-3]))? {0,})?( {0,}VALUE {1,}([^ ]+))?( {1,}OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\./,
         FIELD_TYPE: 'PICS9',
         CAP_INDEX: { 
             LEVEL: 1, 
             NAME: 2, 
-            SIZE: 3, 
-            DECIMALS: 5,
-            HAS_COMPRESSION: 6,
-            COMPRESSION_LEVEL: 8, 
-            DEFAULT_VALUE: 10,
-            OCCURS_MIN: 12, 
-            OCCURS_MAX: 13,
-            DEPENDING_ON: 15
-        }
-    },
-    PIC_PLUS_9: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+) +PIC +\+9 {0,}\(([0-9]+)\)(V([0-9]+))? {0,}(COMP(-([1-3]))? {0,})?( {0,}VALUE {0,}(.+))?( {0,}OCCURS +([0-9]+) +TO +([0-9]+) +TIMES)?( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))? {0,}\./,
-        FIELD_TYPE: 'PIC_PLUS_9',
-        CAP_INDEX: { 
-            LEVEL: 1, 
-            NAME: 2, 
-            SIZE: 3, 
-            DECIMALS: 5,
-            HAS_COMPRESSION: 6,
-            COMPRESSION_LEVEL: 8, 
-            DEFAULT_VALUE: 10,
-            OCCURS_MIN: 12, 
-            OCCURS_MAX: 13,
-            DEPENDING_ON: 15
+            PIC_TYPE: 3,
+            PRECISION_SIZE: 4, 
+            DECIMALS_TYPE_1: 6,
+            DECIMALS_TYPE_2: 8,
+            HAS_COMPRESSION: 9,
+            COMPRESSION_LEVEL: 11, 
+            DEFAULT_VALUE: 13,
+            OCCURS_MIN: 15, 
+            OCCURS_MAX: 17,
+            DEPENDING_ON: 20
         }
     },
     REDEFINES: {
@@ -91,10 +49,7 @@ var regexes = {
 };
 
 const FIELD_TYPE = {
-    PICX: 'PICX',
-    PIC9: 'PIC9', 
-    PICS9: 'PICS9', 
-    PIC_PLUS_9: 'PIC_PLUS_9', 
+    PIC: 'PIC',
     GROUP: 'GROUP',
     REDEFINE: 'REDEFINE',
     COPY: 'COPY'
@@ -104,8 +59,9 @@ class FieldGroup {
     constructor(statement, match){
         this.src = statement;
         /** @type {'GROUP'} */this.type = FIELD_TYPE.GROUP;
-        this.logicalLevel = match[regexes.GROUP_ITEM.CAP_INDEX.LEVEL];
+        this.level = match[regexes.GROUP_ITEM.CAP_INDEX.LEVEL];
         this.name = match[regexes.GROUP_ITEM.CAP_INDEX.NAME];
+        this.value = match[regexes.GROUP_ITEM.CAP_INDEX.VALUE];
         this.occurs_min = match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MIN];
         this.occurs_max = match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MAX];
         this.depending_on = match[regexes.GROUP_ITEM.CAP_INDEX.DEPENDING_ON];
@@ -113,68 +69,23 @@ class FieldGroup {
     }
 }
 
-class FieldPIC9 {
+class FieldPIC {
     constructor(statement, match){
         this.src = statement;
-        /** @type {'PIC9'} */this.type = FIELD_TYPE.PIC9;
-        this.logicalLevel = match[regexes.PIC9.CAP_INDEX.LEVEL];
-        this.name = match[regexes.PIC9.CAP_INDEX.NAME];
-        this.size = match[regexes.PIC9.CAP_INDEX.SIZE];
-        this.decimals = match[regexes.PIC9.CAP_INDEX.DECIMALS];
-        this.has_compression = match[regexes.PIC9.CAP_INDEX.HAS_COMPRESSION];
-        this.compression_level = match[regexes.PIC9.CAP_INDEX.COMPRESSION_LEVEL];
-        this.default_value = (match[regexes.PIC9.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
-        this.occurs_min = match[regexes.PIC9.CAP_INDEX.OCCURS_MIN];
-        this.occurs_max = match[regexes.PIC9.CAP_INDEX.OCCURS_MAX];
-        this.depending_on = match[regexes.PIC9.CAP_INDEX.DEPENDING_ON];
-    }
-}
+        /** @type {string} */this.type = FIELD_TYPE.PIC;
 
-class FieldPICPlus9{
-    constructor(statement, match){
-        this.src = statement;
-        /** @type {'PIC_PLUS_9'} */this.type = FIELD_TYPE.PIC_PLUS_9;
-        this.logicalLevel = match[regexes.PIC_PLUS_9.CAP_INDEX.LEVEL];
-        this.name = match[regexes.PIC_PLUS_9.CAP_INDEX.NAME];
-        this.size = match[regexes.PIC_PLUS_9.CAP_INDEX.SIZE];
-        this.decimals = match[regexes.PIC_PLUS_9.CAP_INDEX.DECIMALS];
-        this.has_compression = match[regexes.PIC_PLUS_9.CAP_INDEX.HAS_COMPRESSION];
-        this.compression_level = match[regexes.PIC_PLUS_9.CAP_INDEX.COMPRESSION_LEVEL];
-        this.default_value = (match[regexes.PIC_PLUS_9.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
-        this.occurs_min = match[regexes.PIC_PLUS_9.CAP_INDEX.OCCURS_MIN];
-        this.occurs_max = match[regexes.PIC_PLUS_9.CAP_INDEX.OCCURS_MAX];
-        this.depending_on = match[regexes.PIC_PLUS_9.CAP_INDEX.DEPENDING_ON];
-    }
-}
-
-class FieldPICS9{
-    constructor(statement, match){
-        this.src = statement;
-        /** @type {'PICS9'} */this.type = FIELD_TYPE.PICS9;
-        this.logicalLevel = match[regexes.PICS9.CAP_INDEX.LEVEL];
-        this.name = match[regexes.PICS9.CAP_INDEX.NAME];
-        this.size = match[regexes.PICS9.CAP_INDEX.SIZE];
-        this.decimals = match[regexes.PICS9.CAP_INDEX.DECIMALS];
-        this.has_compression = match[regexes.PICS9.CAP_INDEX.HAS_COMPRESSION];
-        this.compression_level = match[regexes.PICS9.CAP_INDEX.COMPRESSION_LEVEL];
-        this.default_value = (match[regexes.PICS9.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
-        this.occurs_min = match[regexes.PICS9.CAP_INDEX.OCCURS_MIN];
-        this.occurs_max = match[regexes.PICS9.CAP_INDEX.OCCURS_MAX];
-        this.depending_on = match[regexes.PICS9.CAP_INDEX.DEPENDING_ON];
-    }
-}
-
-class FieldPICX{
-    constructor(statement, match){
-        this.src = statement;
-        /** @type {'PICX'} */this.type = FIELD_TYPE.PICX;
-        this.logicalLevel = match[regexes.PICX.CAP_INDEX.LEVEL];
-        this.name = match[regexes.PICX.CAP_INDEX.NAME];
-        this.size = match[regexes.PICX.CAP_INDEX.SIZE];
-        this.default_value = (match[regexes.PICX.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
-        this.occurs_min = match[regexes.PICX.CAP_INDEX.OCCURS_MIN];
-        this.occurs_max = match[regexes.PICX.CAP_INDEX.OCCURS_MAX];
-        this.depending_on = match[regexes.PICX.CAP_INDEX.DEPENDING_ON];
+        /** @type {string} */this.level = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.LEVEL]);
+        /** @type {string} */this.name = match[regexes.GENERIC_PIC.CAP_INDEX.NAME];
+        /** @type {string} */this.picType = match[regexes.GENERIC_PIC.CAP_INDEX.PIC_TYPE];
+        /** @type {number} */this.precisionSize = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.PRECISION_SIZE] | 0);
+        /** @type {number} */this.decimalsType_1 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_1] | 0);
+        /** @type {number} */this.decimalsType_2 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_2] | 0);
+        /** @type {boolean} */this.hasCompression = !!match[regexes.GENERIC_PIC.CAP_INDEX.HAS_COMPRESSION];
+        /** @type {number} */this.compressionLevel = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.COMPRESSION_LEVEL] | 0);
+        /** @type {string} */this.defaultValue = (match[regexes.GENERIC_PIC.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
+        /** @type {number} */this.occursMin = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MIN] | 0);
+        /** @type {number} */this.occursMax = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MAX] | 0);
+        /** @type {string} */this.dependingOn = match[regexes.GENERIC_PIC.CAP_INDEX.DEPENDING_ON];
     }
 }
 
@@ -182,7 +93,7 @@ class FieldREDEFINE{
     constructor(statement, match){
         this.src = statement;
         /** @type {'REDEFINE'} */this.type = FIELD_TYPE.REDEFINE;
-        this.logicalLevel = match[regexes.REDEFINES.CAP_INDEX.LEVEL];
+        this.level = match[regexes.REDEFINES.CAP_INDEX.LEVEL];
         this.name = match[regexes.REDEFINES.CAP_INDEX.NAME];
         this.outer_name = match[regexes.REDEFINES.CAP_INDEX.OUTER_NAME];
         this.fields = [];
@@ -199,10 +110,7 @@ class FieldCOPY{
 }
 
 const matchMap = [
-    {match: regexes.PICS9, type: FieldPICS9}, 
-    {match: regexes.PIC_PLUS_9, type: FieldPICPlus9}, 
-    {match: regexes.PIC9, type: FieldPIC9}, 
-    {match: regexes.PICX, type: FieldPICX}, 
+    {match: regexes.GENERIC_PIC, type: FieldPIC}, 
     {match: regexes.GROUP_ITEM, type: FieldGroup}, 
     {match: regexes.REDEFINES, type: FieldREDEFINE}, 
     {match: regexes.IMPORT_COPY, type: FieldCOPY}, 
@@ -265,13 +173,13 @@ class CopybookParser {
                 continue;
             }
             
-            if(newField.logicalLevel > lastField.logicalLevel && newField.logicalLevel < 50){
+            if(newField.level > lastField.level && newField.level < 50){
                 rootFields.push(lastField);
                 currentParent = rootFields[rootFields.length-1];
                 currentParent.fields.push(newField);
             }else {
-                if(newField.logicalLevel > lastField.logicalLevel){
-                    switch (newField.logicalLevel) {
+                if(newField.level > lastField.level){
+                    switch (newField.level) {
                         case 66:
                             lastField.alternativeNames.push(newField);
                             continue;
@@ -282,14 +190,14 @@ class CopybookParser {
                 }
 
 
-                if(newField.logicalLevel == 77){
+                if(newField.level == 77){
                     // come back to root level
                     rootFields.splice(0, rootFields.length);
                     currentParent = null;
-                } else if(newField.logicalLevel < lastField.logicalLevel){
+                } else if(newField.level < lastField.level){
                     // come back to brother level
                     while(rootFields.length != 0){
-                        if(rootFields[rootFields.length - 1].logicalLevel < newField.logicalLevel) break;
+                        if(rootFields[rootFields.length - 1].level < newField.level) break;
                         rootFields.splice(rootFields.length - 1, 1);
                     }
                 }
@@ -335,15 +243,6 @@ class CopybookParser {
 
         if(!fieldObject) return fieldObject;
 
-
-        try { fieldObject.logicalLevel = parseInt(fieldObject.logicalLevel); } catch(e) {} 
-        try { fieldObject.size = parseInt(fieldObject.size); } catch(e) {} 
-        try { fieldObject.has_compression = parseInt(fieldObject.has_compression); } catch(e) {} 
-        try { fieldObject.compression_level = parseInt(fieldObject.compression_level); } catch(e) {} 
-        try { fieldObject.default_value = parseInt(fieldObject.default_value); } catch(e) {} 
-        try { fieldObject.occurs_min = parseInt(fieldObject.occurs_min); } catch(e) {} 
-        try { fieldObject.occurs_max = parseInt(fieldObject.occurs_max); } catch(e) {} 
-
         return fieldObject;
     }
 }
@@ -358,10 +257,7 @@ if(typeof module !== "undefined") {
     module.exports = {
         FIELD_TYPE,
         FieldGroup,
-        FieldPIC9,
-        FieldPICPlus9,
-        FieldPICS9,
-        FieldPICX,
+        FieldPIC,
         FieldREDEFINE,
         FieldCOPY,
         CopybookParser,

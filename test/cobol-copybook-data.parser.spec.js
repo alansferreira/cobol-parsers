@@ -6,6 +6,17 @@ const copybookParser = new CopybookParser();
 
 
 describe('Read and parse copybook data file', function(){
+    it('should parse generate JSDoc of copybook', function(){
+        const script = new String(fs.readFileSync('./test/CVCAW027.cpy'));
+        
+        const parsedBook = copybookParser.parse(script);
+
+        const record = new CopybookRecord(parsedBook, 'CVCAW027');
+        console.log(record.getJSDoc());
+        
+        assert(true, 'error');
+    });
+
     it('should parse copybook records', function(){
         const script = new String(fs.readFileSync('./test/CCP0001.CPY'));
         
@@ -17,16 +28,6 @@ describe('Read and parse copybook data file', function(){
         assert(true, 'error');
     });
 
-    it('should parse generate JSDoc of copybook', function(){
-        const script = new String(fs.readFileSync('./test/CCP0001.CPY'));
-        
-        const parsedBook = copybookParser.parse(script);
-
-        const record = new CopybookRecord(parsedBook, 'CCP0001');
-        console.log(record.generateType());
-        
-        assert(true, 'error');
-    });
 
     // it('should parse cobol copybook', function(){
     //     var script = new String(fs.readFileSync('./test/CCP0001.CPY'));

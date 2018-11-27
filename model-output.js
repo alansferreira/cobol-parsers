@@ -3,52 +3,13 @@
  * @property {{firstname: string, lastname: string}} name 
  */
 
-/** @typedef CCP0001
- * @property {string} wrkModulo
- * @property {string} wrkNomeTabela
- * @property {string} wrkStoredProc
- * @property {string} wrkHsoltdAgnda
- * @property {number} wrkGravadoCabLote
- * @property {number} wrkOperacao
- * @property {number} wrkNdiaPgmcAgnda
- * @property {number} wrkDataAtual
- * @property {string} wrkDataAtu
- * @property {string} wrkRparmAgnda
- * @property {number} wrkNagnda
- * @property {undefined} wrkNagndaR
- * @property {number} wrkDagendCalc
- * @property {number} wrkDagend
- * @property {undefined} wrkDagendR
- * @property {{wrkDfimDagendAaaa:  number, wrkDfimDagendMm:  number, wrkDfimDagendDd:  number}} wrkDfimDagend
- * @property {{wrkDd:  number, wrkPonto1:  string, wrkMm:  number, wrkPonto2:  string, wrkAaaa:  number}} wrkDataDb2
- * @property {{wrkAno:  number, filler:  string, wrkMes:  number, filler:  string, wrkDia:  number, filler:  string, wrkHora:  string, filler:  string, wrkMinuto:  number, filler:  string, wrkSegundo:  number, filler:  string, wrkMilesimo:  number}} wrkTimestamp
- * @property {string} wrkProtocolo
- * @property {{wrkBlocoRetorno:  {wrkCodRetorno:  number, wrkCodErro:  string, wrkCodMensagem:  string}}} wrkTratamentoErros
- * @property {{wrkCclub:  number, wrkCtpoContr:  number, wrkNseqContr:  number}} wrkContrato
- * @property {string} wrkAgcp1349
- * @property {string} wrkAgcp1304
- * @property {string} wrkAgcp1311
- * @property {string} wrkAgcp1324
- * @property {string} wrkAgcp1368
- * @property {string} wrkAgcp1369
- * @property {string} wrkAgcp1382
- * @property {string} wrkCale1000
- * @property {string} wrkCdps1429
- * @property {string} wrkCtcp1068
- * @property {string} wrkInec108A
- * @property {string} wrkFrwk1999
- * @property {string} wrkAgcp1326
- * @property {number} wrkCsitAgnda
- * @property {string} filler
- * @property {{wrkNagndaLoteNull:  number, wrkNagndaRagddNull:  number, wrkNagndaPgmdNull:  number, wrkCusuarManutNull:  number, wrkHmanutRegNull:  number}} wrkAgcpb006Null
- * @property {{wrkCpssoaJuridPrtcpNull:  number, wrkCtpoContrPrtcpNull:  number, wrkNseqContrPrtcpNull:  number, wrkCpssoaPrtcpNull:  number, wrkCtpoPrtcpPssoaNull:  number, wrkCpssoaSolctAgndaNull:  number}} wrkAgcpb008Null
- * @property {string} filler
- * @property {string} filler
+/** @typedef CVCAW027
+ * @property {{cvcaw027NumArquivo:  number, cvcaw027NumLote:  number, cvcaw027NseqRegLote:  number, cvcaw027NseqRegTotal:  number, cvcaw027CindcdOrigPgto:  number, cvcaw027CsistOrig:  string, cvcaw027NseqPagfor:  number, cvcaw027SistLyoutOrige:  string, cvcaw027Vpagto:  number, filler:  string, cvcaw027Ocorrencias:  {cvcaw027Ocorr:  string}[], cvcaw027IndErro:  number}} cvcaw027Registro
  */
 
- /** @type {CCP0001} */
+ /** @type {CVCAW027} */
  const t = {};
-t.wrkTratamentoErros.wrkBlocoRetorno.wrkCodErro
+t.cvcaw027Registro.cvcaw027Ocorrencias[0].cvcaw027Ocorr
 
  
 /** @typedef wrkDfimDagend

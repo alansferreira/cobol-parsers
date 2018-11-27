@@ -1,6 +1,6 @@
 const decamelize = require('decamelize');
 const camelCase = require('camelcase');
-const { Copybook, FieldGroup, FieldPIC9, FieldPICPlus9, FieldPICS9, FieldPICX, FieldREDEFINE, FieldCOPY, FIELD_TYPE } = require('./cobol-copybook.parser');
+const { Copybook, FieldGroup, FieldPIC, FieldREDEFINE, FieldCOPY, FIELD_TYPE } = require('./cobol-copybook.parser');
 const fs = require('fs');
 const { Readable } = require('stream');
 
@@ -13,40 +13,16 @@ const generateTypeMap = {};
 /**
  * @param {string} content
  * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
+ * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
-stringToModelMap[FIELD_TYPE.PICX] = (content, offset, field) => {
-    return content.substring(offset, offset + getFieldStringLengthMap[field.type](field));
-};
-/**
- * @param {string} content
- * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
- */
-stringToModelMap[FIELD_TYPE.PIC9] = (content, offset, field) => {
-    return content.substring(offset, offset + getFieldStringLengthMap[field.type](field));
-};
-/**
- * @param {string} content
- * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
- */
-stringToModelMap[FIELD_TYPE.PICS9] = (content, offset, field) => {
-    return content.substring(offset, offset + getFieldStringLengthMap[field.type](field));
-};
-/**
- * @param {string} content
- * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
- */
-stringToModelMap[FIELD_TYPE.PIC_PLUS_9] = (content, offset, field) => {
+stringToModelMap[FIELD_TYPE.PIC] = (content, offset, field) => {
     return content.substring(offset, offset + getFieldStringLengthMap[field.type](field));
 };
 
 /**
  * @param {string} content
  * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
+ * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 function stringToModelGroup(content, offset, field){
     /** @type {teste} */
@@ -76,7 +52,7 @@ function stringToModelGroup(content, offset, field){
 /**
  * @param {string} content
  * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
+ * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 stringToModelMap[FIELD_TYPE.GROUP] = (content, offset, field) => {
     let occurs = getOccursLength(field);
@@ -103,7 +79,7 @@ stringToModelMap[FIELD_TYPE.GROUP] = (content, offset, field) => {
 /**
  * @param {string} content
  * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
+ * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 stringToModelMap[FIELD_TYPE.REDEFINE] = (content, offset, field) => {
 
@@ -111,22 +87,13 @@ stringToModelMap[FIELD_TYPE.REDEFINE] = (content, offset, field) => {
 /**
  * @param {string} content
  * @param {number} offset
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field
+ * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 stringToModelMap[FIELD_TYPE.COPY] = (content, offset, field) => {
 
 };
 
-modelToStringMap[FIELD_TYPE.PICX] = () => {
-
-};
-modelToStringMap[FIELD_TYPE.PIC9] = () => {
-
-};
-modelToStringMap[FIELD_TYPE.PICS9] = () => {
-
-};
-modelToStringMap[FIELD_TYPE.PIC_PLUS_9] = () => {
+modelToStringMap[FIELD_TYPE.PIC] = () => {
 
 };
 modelToStringMap[FIELD_TYPE.GROUP] = () => {
@@ -139,19 +106,13 @@ modelToStringMap[FIELD_TYPE.COPY] = () => {
 
 };
 
+/**
+ * @param {FieldPIC} field
+ */
+generateTypeMap[FIELD_TYPE.PIC] = (field) => {
+    return  (['A', 'X'].indexOf(field.picType.toUpperCase()) != -1 ? 'string' : 'number');
+};
 
-generateTypeMap[FIELD_TYPE.PICX] = (field) => {
-    return `string`;
-};
-generateTypeMap[FIELD_TYPE.PIC9] = (field) => {
-    return `number`;
-};
-generateTypeMap[FIELD_TYPE.PICS9] = (field) => {
-    return `number`;
-};
-generateTypeMap[FIELD_TYPE.PIC_PLUS_9] = (field) => {
-    return `number`;
-};
 generateTypeMap[FIELD_TYPE.GROUP] = (field) => {
     
     
@@ -162,16 +123,11 @@ generateTypeMap[FIELD_TYPE.GROUP] = (field) => {
         
         const result = generateTypeMap[child.type](child);
         if(!result) continue;
+        const occurs = getOccursLength(child);
 
-        if(child.type == FIELD_TYPE.GROUP){
-            const occurs = getOccursLength(child);
-
-            if(occurs > 1){
-                buff.push(`${camelCase(child.name)}:  ${result}[]`);
-            }else{
-                buff.push(`${camelCase(child.name)}:  ${result}`);
-            }
-        } else{
+        if(occurs > 1){
+            buff.push(`${camelCase(child.name)}:  ${result}[]`);
+        }else{
             buff.push(`${camelCase(child.name)}:  ${result}`);
         }
     }
@@ -187,23 +143,11 @@ generateTypeMap[FIELD_TYPE.COPY] = (field) => {
 };
 
 
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
-getFieldStringLengthMap[FIELD_TYPE.PICX] = (field) => {
+/** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
+getFieldStringLengthMap[FIELD_TYPE.PIC] = (field) => {
     return field.size;
 };
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
-getFieldStringLengthMap[FIELD_TYPE.PIC9] = (field) => {
-    return field.size;
-};
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
-getFieldStringLengthMap[FIELD_TYPE.PICS9] = (field) => {
-    return field.size;
-};
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
-getFieldStringLengthMap[FIELD_TYPE.PIC_PLUS_9] = (field) => {
-    return field.size;
-};
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
+/** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
 getFieldStringLengthMap[FIELD_TYPE.GROUP] = (field) => {
     let length = 0;
     for (let f = 0; f < field.fields.length; f++) {
@@ -212,24 +156,25 @@ getFieldStringLengthMap[FIELD_TYPE.GROUP] = (field) => {
     }
     return length;
 };
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
+/** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
 getFieldStringLengthMap[FIELD_TYPE.REDEFINE] = (field) => {
     throw new Error(`getFieldStringLengthMap[FIELD_TYPE.REDEFINE] is not implemented!`);
 };
-/** @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} field */
+/** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
 getFieldStringLengthMap[FIELD_TYPE.COPY] = (field) => {
     throw new Error(`getFieldStringLengthMap[FIELD_TYPE.COPY] is not implemented!`);
 };
 
 /**
  * 
- * @param {FieldGroup | FieldPIC9 | FieldPICPlus9 | FieldPICS9 | FieldPICX | FieldREDEFINE | FieldCOPY} item 
+ * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} item 
  */
 function getOccursLength(item){
     var occurs = {
         max: parseInt((item.occurs_max | 0)),
         min: parseInt((item.occurs_min | 0))
     };
+    if(occurs.max < occurs.min) return occurs.min;
     return (occurs.max - occurs.min | 1);
 }
 
@@ -266,7 +211,7 @@ class CopybookRecord {
         return obj;
     }
     
-    generateType(){
+    getJSDoc(){
         const buff = [`/** @typedef ${this.book.name} \n`];
         for (let c = 0; c < this.book.fields.length; c++) {
             const child = this.book.fields[c];
@@ -301,7 +246,7 @@ class CopybookRecord {
 
 if(typeof module !== "undefined") {
     module.exports = {
-        CopybookRecord
+        CopybookRecord: CopybookRecord
     };
 }
 
