@@ -14,7 +14,12 @@
     "url": "https://github.com/alansferreira/cobol-parsers/issues"
   },
   "homepage": "https://github.com/alansferreira/cobol-parsers#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@types/node": "^10.12.0",
+    "byline": "^5.0.0",
+    "camelcase": "5.0.0",
+    "decamelize": "^2.0.0"
+  },
   "devDependencies": {
     "mocha": "5.2.0"
   }

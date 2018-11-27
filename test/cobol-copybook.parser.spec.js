@@ -1,12 +1,13 @@
-var assert = require('assert');
-var cpyParser = require('../src/parsers/cobol-copybook.parser');
-var fs = require('fs');
+const assert = require('assert');
+const { CopybookParser } = require('../src/parsers/cobol-copybook.parser');
+const fs = require('fs');
+const parser = new CopybookParser();
 
 describe('Read and parse copybook definitions', function(){
     it('should parse cobol copybook statement iterator model', function(){
         var script = new String(fs.readFileSync('./test/CCP0001.CPY'));
         
-        var sttIterator = cpyParser.getStatemantIterator(script);
+        var sttIterator = parser.getStatemantIterator(script);
         var iteratee = {done: false};
         var countStatements = 0;
         var countStatementsWithDot = 0;
@@ -24,51 +25,13 @@ describe('Read and parse copybook definitions', function(){
     it('should parse cobol copybook', function(){
         var script = new String(fs.readFileSync('./test/CCP0001.CPY'));
         
-        var book = cpyParser.loadBook(script);
+        var book = parser.parse(script);
         
         fs.writeFileSync('./parsed-book.CCP0001.CPY.json', JSON.stringify(book, null, 2));
         
         
-        assert(book.length==71, 'error');
+        assert(book.fields.length==71, 'error');
     });
-
-
-
-    // it('should parse cobol copybook PICX', function(){
-    //     var script = "       77  WRK-LOCAL                   PIC  X(004)         VALUE SPACES.";
-        
-    //     var book = cdsParser.COBOL.COPYBOOK.loadBook(script);
-        
-    //     console.log(book);
-    //     fs.writeFileSync('./parsed-book.CCP0000.CPY.json', JSON.stringify(book, null, 2));
-        
-        
-    //     assert(book.length==49, 'error');
-    // });
-
-    // it('should parse cobol copybook', function(){
-    //     var script = new String(fs.readFileSync('./test/CCP0001.CPY'));
-        
-    //     var book = cdsParser.COBOL.COPYBOOK.loadBook(script);
-        
-    //     console.log(book);
-    //     fs.writeFileSync('./parsed-book.CCP0001.CPY.json', JSON.stringify(book, null, 2));
-        
-        
-    //     assert(book.length==49, 'error');
-    // });
-
-    // it('should parse cobol copybook redefines', function(){
-    //     var script = new String(fs.readFileSync('./test/CCP0000.CPY'));
-        
-    //     var book = cdsParser.COBOL.COPYBOOK.loadBook(script);
-        
-    //     console.log(book);
-    //     fs.writeFileSync('./parsed-book.CCP0000.CPY.json', JSON.stringify(book, null, 2));
-        
-        
-    //     assert(book.length==49, 'error');
-    // });
 
 });
 

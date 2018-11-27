@@ -26,6 +26,7 @@
             "type": "node",
             "request": "launch",
             "name": "Mocha Current File",
+            "runtimeExecutable": "/media/af/usr-data/dev/runtimes/.nvm/versions/node/v8.9.3/bin/node",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--timeout",
