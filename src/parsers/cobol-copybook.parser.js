@@ -59,12 +59,17 @@ class FieldGroup {
     constructor(statement, match){
         this.src = statement;
         /** @type {'GROUP'} */this.type = FIELD_TYPE.GROUP;
-        this.level = match[regexes.GROUP_ITEM.CAP_INDEX.LEVEL];
-        this.name = match[regexes.GROUP_ITEM.CAP_INDEX.NAME];
-        this.value = match[regexes.GROUP_ITEM.CAP_INDEX.VALUE];
-        this.occurs_min = match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MIN];
-        this.occurs_max = match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MAX];
-        this.depending_on = match[regexes.GROUP_ITEM.CAP_INDEX.DEPENDING_ON];
+        /** @type {number} */this.level = match[regexes.GROUP_ITEM.CAP_INDEX.LEVEL];
+        /** @type {string} */this.name = match[regexes.GROUP_ITEM.CAP_INDEX.NAME];
+        /** @type {string} */this.value = match[regexes.GROUP_ITEM.CAP_INDEX.VALUE];
+        /** @type {string} */this.depending_on = match[regexes.GROUP_ITEM.CAP_INDEX.DEPENDING_ON];
+        /** @type {number} */this.occursMin = parseInt(match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MIN] | 1);
+        /** @type {number} */this.occursMax = parseInt(match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MAX] | 1);
+        if(this.occursMax < this.occursMin){
+            /** @type {number} */this.occursSize = (this.occursMin | 1);
+        }else{
+            /** @type {number} */this.occursSize = (this.occursMax - this.occursMin | 1);
+        }
         this.fields = [];
     }
 }
@@ -74,7 +79,7 @@ class FieldPIC {
         this.src = statement;
         /** @type {string} */this.type = FIELD_TYPE.PIC;
 
-        /** @type {string} */this.level = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.LEVEL]);
+        /** @type {number} */this.level = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.LEVEL]);
         /** @type {string} */this.name = match[regexes.GENERIC_PIC.CAP_INDEX.NAME];
         /** @type {string} */this.picType = match[regexes.GENERIC_PIC.CAP_INDEX.PIC_TYPE];
         /** @type {number} */this.precisionSize = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.PRECISION_SIZE] | 0);
@@ -85,6 +90,12 @@ class FieldPIC {
         /** @type {string} */this.defaultValue = (match[regexes.GENERIC_PIC.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
         /** @type {number} */this.occursMin = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MIN] | 0);
         /** @type {number} */this.occursMax = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MAX] | 0);
+        if(this.occursMax < this.occursMin){
+            /** @type {number} */this.occursSize = (this.occursMin | 1);
+        }else{
+            /** @type {number} */this.occursSize = (this.occursMax - this.occursMin | 1);
+        }
+        
         /** @type {string} */this.dependingOn = match[regexes.GENERIC_PIC.CAP_INDEX.DEPENDING_ON];
     }
 }

@@ -16,7 +16,18 @@ const generateTypeMap = {};
  * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 stringToModelMap[FIELD_TYPE.PIC] = (content, offset, field) => {
-    return content.substring(offset, offset + getFieldStringLengthMap[field.type](field));
+    const occurs = field.occursSize;
+    if(occurs > 1){
+        const ret = [];
+        let _offset = offset;
+        for (let o = 0; o < occurs; o++) {
+            ret.push(content.substr(_offset, field.precisionSize));
+            _offset += field.precisionSize;
+        }
+        return ret;
+    }else{
+        return content.substr(offset, field.precisionSize);
+    }
 };
 
 /**
@@ -25,26 +36,14 @@ stringToModelMap[FIELD_TYPE.PIC] = (content, offset, field) => {
  * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 function stringToModelGroup(content, offset, field){
-    /** @type {teste} */
     const obj = {};
 
     let _offset = offset;
-
-    console.log(`/** @typedef ${camelCase(field.name)}`);
     for (let f = 0; f < field.fields.length; f++) {
         const child = field.fields[f];
-        child._stringLength = getFieldStringLengthMap[child.type](child);
-        obj[child.name] = stringToModelMap[child.type](content, _offset, child);
-        _offset += child._stringLength;
-
-        if(child.type==FIELD_TYPE.GROUP){
-            console.log(` * @property {${camelCase(child.name)}} ${camelCase(child.name)}`);
-        }else{
-            console.log(` * @property {*} ${camelCase(child.name)}`);
-        }
-
+        obj[camelCase(child.name)] = stringToModelMap[child.type](content, _offset, child);
+        _offset += getFieldStringLengthMap[child.type](child);
     }
-    console.log(`*/`);
     return obj;
 
 }
@@ -55,23 +54,26 @@ function stringToModelGroup(content, offset, field){
  * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field
  */
 stringToModelMap[FIELD_TYPE.GROUP] = (content, offset, field) => {
-    let occurs = getOccursLength(field);
+    let occurs = field.occursSize;
     
-    
-    if(occurs < 2){
-        return stringToModelGroup(content, offset, field);
-    } else {
+    if(occurs > 1){
         const ret = [];
-        const obj = {};
-        const fieldLength = getFieldStringLengthMap[field.type](field);
+        let obj = {};
         let _offset = offset;
 
         for(let o = 0; o < occurs ; o++){
-            obj = stringToModelGroup(content, offset, field);
+            obj = {};
+            for (let f = 0; f < field.fields.length; f++) {
+                const child = field.fields[f];
+                obj[camelCase(child.name)] = stringToModelMap[child.type](content, _offset, child);
+                _offset += getFieldStringLengthMap[child.type](child);
+            }
             ret.push(obj);
-            _offset += fieldLength;
+        
         }
         return ret;
+    } else {
+        return stringToModelGroup(content, offset, field);
     }
 
     // return content.substring(offset, offset + getFieldStringLengthMap[field.type](field));
@@ -96,6 +98,7 @@ stringToModelMap[FIELD_TYPE.COPY] = (content, offset, field) => {
 modelToStringMap[FIELD_TYPE.PIC] = () => {
 
 };
+
 modelToStringMap[FIELD_TYPE.GROUP] = () => {
 
 };
@@ -123,7 +126,7 @@ generateTypeMap[FIELD_TYPE.GROUP] = (field) => {
         
         const result = generateTypeMap[child.type](child);
         if(!result) continue;
-        const occurs = getOccursLength(child);
+        const occurs = child.occursSize;
 
         if(occurs > 1){
             buff.push(`${camelCase(child.name)}:  ${result}[]`);
@@ -145,16 +148,19 @@ generateTypeMap[FIELD_TYPE.COPY] = (field) => {
 
 /** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
 getFieldStringLengthMap[FIELD_TYPE.PIC] = (field) => {
-    return field.size;
+    const occurs = field.occursSize
+    return field.precisionSize * occurs;
 };
 /** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
 getFieldStringLengthMap[FIELD_TYPE.GROUP] = (field) => {
+    const occurs = field.occursSize
+
     let length = 0;
     for (let f = 0; f < field.fields.length; f++) {
         const child = field.fields[f];
         length+=getFieldStringLengthMap[child.type](child);
     }
-    return length;
+    return length * occurs;
 };
 /** @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} field */
 getFieldStringLengthMap[FIELD_TYPE.REDEFINE] = (field) => {
@@ -164,19 +170,6 @@ getFieldStringLengthMap[FIELD_TYPE.REDEFINE] = (field) => {
 getFieldStringLengthMap[FIELD_TYPE.COPY] = (field) => {
     throw new Error(`getFieldStringLengthMap[FIELD_TYPE.COPY] is not implemented!`);
 };
-
-/**
- * 
- * @param {FieldGroup | FieldPIC | FieldREDEFINE | FieldCOPY} item 
- */
-function getOccursLength(item){
-    var occurs = {
-        max: parseInt((item.occurs_max | 0)),
-        min: parseInt((item.occurs_min | 0))
-    };
-    if(occurs.max < occurs.min) return occurs.min;
-    return (occurs.max - occurs.min | 1);
-}
 
 
 class CopybookRecord {
@@ -197,15 +190,14 @@ class CopybookRecord {
     toModel(recordString){
         const obj = {};
         let _offset = 0;
-
+        let fieldLength;
         for (let f = 0; f < this.book.fields.length; f++) {
             const child = this.book.fields[f];
             
             if([FIELD_TYPE.REDEFINE, FIELD_TYPE.COPY].indexOf(child.type) > -1) continue;
 
-            child._stringLength = getFieldStringLengthMap[child.type](child);
-            obj[child.name] = stringToModelMap[child.type](recordString, _offset, child);
-            _offset += child._stringLength;
+            obj[camelCase(child.name)] = stringToModelMap[child.type](recordString, _offset, child);
+            _offset += getFieldStringLengthMap[child.type](child);
         }
 
         return obj;

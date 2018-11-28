@@ -18,14 +18,20 @@ describe('Read and parse copybook data file', function(){
     });
 
     it('should parse copybook records', function(){
-        const script = new String(fs.readFileSync('./test/CCP0001.CPY'));
+        const script = new String(fs.readFileSync('./test/CVCAW027.cpy'));
         
         const parsedBook = copybookParser.parse(script);
 
-        const record = new CopybookRecord(parsedBook, 'CCP0001');
-        record.toModel("01111110*NOME-TABELA                   *02222220");
+        const record = new CopybookRecord(parsedBook, 'CVCAW027');
         
-        assert(true, 'error');
+        /** @typedef CVCAW027
+         * @property {{cvcaw027NumArquivo:  number, cvcaw027NumLote:  number, cvcaw027NseqRegLote:  number, cvcaw027NseqRegTotal:  number, cvcaw027CindcdOrigPgto:  number, cvcaw027CsistOrig:  string, cvcaw027NseqPagfor:  number, cvcaw027SistLyoutOrige:  string, cvcaw027Vpagto:  number, filler:  string, cvcaw027Ocorrencias:  {cvcaw027Ocorr:  string}[], cvcaw027IndErro:  number}} cvcaw027Registro
+         */
+        /** @type {CVCAW027} */ const myVar = record.toModel("011111110*AAAAAA**AAAAA1**AAAAA2**AAAAA3*");
+        
+        
+        assert(myVar.cvcaw027Registro.cvcaw027SistLyoutOrige == '*AAAAAA*', 'error');
+        assert(myVar.cvcaw027Registro.cvcaw027Ocorrencias[2].cvcaw027Ocorr == '*AAAAA3*')
     });
 
 
