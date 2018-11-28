@@ -23,36 +23,23 @@ describe('Read and parse copybook data file', function(){
         const parsedBook = copybookParser.parse(script);
 
         const record = new CopybookRecord(parsedBook, 'CVCAW027');
-        
+                
+        // /** @typedef CVCAW027
+        //  * @property {{cvcaw027NumLote:  number, cvcaw027SistLyoutOrige:  string, cvcaw027Ocorrencias:  {cvcaw027Ocorr:  string[]}, cvcaw027NseqRegLote:  number}} cvcaw027Registro
+        //  * @property {{cvcaw027CindcdOrigPgto:  number, cvcaw027NumArquivo:  number, cvcaw027CsistOrig:  string, cvcaw027NseqPagfor:  number, cvcaw027Vpagto:  number, filler:  string,cvcaw027IndErro:  number}[]} cvcaw027NseqRegTotal
+        //  */
+
         /** @typedef CVCAW027
-         * @property {{cvcaw027NumArquivo:  number, cvcaw027NumLote:  number, cvcaw027NseqRegLote:  number, cvcaw027NseqRegTotal:  number, cvcaw027CindcdOrigPgto:  number, cvcaw027CsistOrig:  string, cvcaw027NseqPagfor:  number, cvcaw027SistLyoutOrige:  string, cvcaw027Vpagto:  number, filler:  string, cvcaw027Ocorrencias:  {cvcaw027Ocorr:  string}[], cvcaw027IndErro:  number}} cvcaw027Registro
-         */
-        /** @type {CVCAW027} */ const myVar = record.toModel("011111110*AAAAAA**AAAAA1**AAAAA2**AAAAA3*");
+        * @property {{cvcaw027NumLote:  number, cvcaw027SistLyoutOrige:  string, cvcaw027Ocorrencias:  {cvcaw027Ocorr:  string[]}, cvcaw027NseqRegLote:  number, cvcaw027NseqRegTotal: {cvcaw027CindcdOrigPgto:  number, cvcaw027NumArquivo:  number, cvcaw027CsistOrig:  string, cvcaw027NseqPagfor:  number, cvcaw027Vpagto:  number, filler:  string, cvcaw027IndErro:  number}[]}} cvcaw027Registro
+        */
+
+        /** @type {CVCAW027} */ const myVar = record.toModel("011111110*AAAA   *AAAAA1**AAAAA2**AAAAA3*0777777701022222220*AA*0333004444444444444051022222220*AA*033300444444444444405");
         
-        
-        assert(myVar.cvcaw027Registro.cvcaw027SistLyoutOrige == '*AAAAAA*', 'error');
-        assert(myVar.cvcaw027Registro.cvcaw027Ocorrencias[2].cvcaw027Ocorr == '*AAAAA3*')
+        assert(myVar.cvcaw027Registro.cvcaw027SistLyoutOrige == '*AAAA', 'error');
+        assert(myVar.cvcaw027Registro.cvcaw027Ocorrencias.cvcaw027Ocorr[2] == '*AAAAA3*')
+        assert(myVar.cvcaw027Registro.cvcaw027NseqRegTotal[0].cvcaw027Vpagto == 444444444444.4)
     });
 
-
-    // it('should parse cobol copybook', function(){
-    //     var script = new String(fs.readFileSync('./test/CCP0001.CPY'));
-        
-    //     var book = copybookParser.parse(script);
-    //     const dataFileStream = fs.createReadStream('/media/af/usr-data/dev/repo/github.com/alansferreira/stages/cobol-parsers/test/JOBSPL01L.JCL', {highWaterMark: 1});
-    //     const recordReadable = new DataReadableStream(book, dataFileStream);
-
-    //     const iterator = recordReadable.readRecordString();
-    //     var iteratee = {done: false};
-    //     while(!iteratee.done){
-    //         iteratee = iterator.next();
-    //         console.log(iteratee.value);
-    //     }
-        
-        
-        
-    //     assert(true, 'error');
-    // });
 
 });
 

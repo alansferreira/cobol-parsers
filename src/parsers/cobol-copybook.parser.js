@@ -1,32 +1,20 @@
 var regexes = {
-    GROUP_ITEM: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+)( {0,}VALUE {1,}([^ ]+))?( {1,}OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\.?/,
-        FIELD_TYPE: 'GROUP_ITEM',
-        CAP_INDEX: { 
-            LEVEL: 1,
-            NAME: 2,
-            VALUE: 4,
-            OCCURS_MIN: 6, 
-            OCCURS_MAX: 8,
-            DEPENDING_ON: 11
-        }
-    },
     GENERIC_PIC: {
-        REGEX: /^ {0,}([0-9]+) +([a-zA-Z-0-9]+) +PIC +([\+9]?[\-9]?[sS9]?[xX]??[aA]?[9]?) {0,}\(([0-9]+)\)(V([0-9]+)( {0,}\(([0-9]+)\))?)? {0,}(COMP(-([1-3]))? {0,})?( {0,}VALUE {1,}([^ ]+))?( {1,}OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)( {0,}DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\./,
-        FIELD_TYPE: 'PICS9',
+        REGEX: /^( +([0-9]+))( +([a-zA-Z-0-9]+))( +PIC +([\+9]?[\-9]?[sS9]?[xX]??[aA]?[9]?) {0,}\(([0-9]+)\)( {0,}V([0-9]+)( {0,}\(([0-9]+)\))?)?( {0,}COMP(-([1-3]))? {0,})?)?( +VALUE +(\"[^\"]+\"|[0-9]+))?( +OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)?( +DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\./,
+        FIELD_TYPE: 'PIC',
         CAP_INDEX: { 
             LEVEL: 1, 
-            NAME: 2, 
-            PIC_TYPE: 3,
-            PRECISION_SIZE: 4, 
-            DECIMALS_TYPE_1: 6,
-            DECIMALS_TYPE_2: 8,
-            HAS_COMPRESSION: 9,
-            COMPRESSION_LEVEL: 11, 
-            DEFAULT_VALUE: 13,
-            OCCURS_MIN: 15, 
-            OCCURS_MAX: 17,
-            DEPENDING_ON: 20
+            NAME: 4, 
+            PIC_TYPE: 6,
+            PRECISION_SIZE: 7, 
+            DECIMALS_TYPE_1: 9,
+            DECIMALS_TYPE_2: 11,
+            HAS_COMPRESSION: 12,
+            COMPRESSION_LEVEL: 14, 
+            DEFAULT_VALUE: 16,
+            OCCURS_MIN: 18, 
+            OCCURS_MAX: 20,
+            DEPENDING_ON: 23
         }
     },
     REDEFINES: {
@@ -50,29 +38,35 @@ var regexes = {
 
 const FIELD_TYPE = {
     PIC: 'PIC',
-    GROUP: 'GROUP',
     REDEFINE: 'REDEFINE',
     COPY: 'COPY'
 }
+const PIC_TYPE = {
+    POSITIVE_NUMBER: "+9",
+    NEGATIVE_NUMBER: "-9",
+    SIGNED_NUMBER: "S9",
+    ALPHANUMERIC: "X",
+    ALPHABETIC: "A",
+    NUMERIC: "9",
+};
 
-class FieldGroup {
-    constructor(statement, match){
-        this.src = statement;
-        /** @type {'GROUP'} */this.type = FIELD_TYPE.GROUP;
-        /** @type {number} */this.level = match[regexes.GROUP_ITEM.CAP_INDEX.LEVEL];
-        /** @type {string} */this.name = match[regexes.GROUP_ITEM.CAP_INDEX.NAME];
-        /** @type {string} */this.value = match[regexes.GROUP_ITEM.CAP_INDEX.VALUE];
-        /** @type {string} */this.depending_on = match[regexes.GROUP_ITEM.CAP_INDEX.DEPENDING_ON];
-        /** @type {number} */this.occursMin = parseInt(match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MIN] | 1);
-        /** @type {number} */this.occursMax = parseInt(match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MAX] | 1);
-        if(this.occursMax < this.occursMin){
-            /** @type {number} */this.occursSize = (this.occursMin | 1);
-        }else{
-            /** @type {number} */this.occursSize = (this.occursMax - this.occursMin | 1);
-        }
-        this.fields = [];
-    }
-}
+// class FieldGroup {
+//     constructor(statement, match){
+//         this.src = statement;
+//         /** @type {'GROUP'} */this.type = FIELD_TYPE.GROUP;
+//         /** @type {number} */this.level = match[regexes.GROUP_ITEM.CAP_INDEX.LEVEL];
+//         /** @type {string} */this.name = match[regexes.GROUP_ITEM.CAP_INDEX.NAME];
+//         /** @type {string} */this.value = match[regexes.GROUP_ITEM.CAP_INDEX.VALUE];
+//         /** @type {string} */this.depending_on = match[regexes.GROUP_ITEM.CAP_INDEX.DEPENDING_ON];
+//         /** @type {number} */this.occursMin = parseInt(match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MIN] | 1);
+//         /** @type {number} */this.occursMax = parseInt(match[regexes.GROUP_ITEM.CAP_INDEX.OCCURS_MAX] | 1);
+//         if(this.occursMax < this.occursMin){
+//             /** @type {number} */this.occursSize = this.occursMin;
+//         }else{
+//             /** @type {number} */this.occursSize = this.occursMax;
+//         }
+//     }
+// }
 
 class FieldPIC {
     constructor(statement, match){
@@ -82,21 +76,24 @@ class FieldPIC {
         /** @type {number} */this.level = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.LEVEL]);
         /** @type {string} */this.name = match[regexes.GENERIC_PIC.CAP_INDEX.NAME];
         /** @type {string} */this.picType = match[regexes.GENERIC_PIC.CAP_INDEX.PIC_TYPE];
-        /** @type {number} */this.precisionSize = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.PRECISION_SIZE] | 0);
-        /** @type {number} */this.decimalsType_1 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_1] | 0);
-        /** @type {number} */this.decimalsType_2 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_2] | 0);
+        /** @type {number} */this.precisionSize = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.PRECISION_SIZE] || 0);
+        /** @type {number} */this.decimalsType_1 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_1] || 0);
+        /** @type {number} */this.decimalsType_2 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_2] || 0);
         /** @type {boolean} */this.hasCompression = !!match[regexes.GENERIC_PIC.CAP_INDEX.HAS_COMPRESSION];
-        /** @type {number} */this.compressionLevel = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.COMPRESSION_LEVEL] | 0);
+        /** @type {number} */this.compressionLevel = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.COMPRESSION_LEVEL] || 0);
         /** @type {string} */this.defaultValue = (match[regexes.GENERIC_PIC.CAP_INDEX.DEFAULT_VALUE] || '').replace(/[\'\"]/g, '');
-        /** @type {number} */this.occursMin = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MIN] | 0);
-        /** @type {number} */this.occursMax = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MAX] | 0);
+        /** @type {number} */this.occursMin = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MIN] || 1);
+        /** @type {number} */this.occursMax = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.OCCURS_MAX] || 1);
         if(this.occursMax < this.occursMin){
-            /** @type {number} */this.occursSize = (this.occursMin | 1);
+            /** @type {number} */this.occursSize = this.occursMin;
         }else{
-            /** @type {number} */this.occursSize = (this.occursMax - this.occursMin | 1);
+            /** @type {number} */this.occursSize = this.occursMax;
         }
         
         /** @type {string} */this.dependingOn = match[regexes.GENERIC_PIC.CAP_INDEX.DEPENDING_ON];
+
+        /** @type {FieldPIC[]} */ this.fields = [];
+
     }
 }
 
@@ -122,7 +119,6 @@ class FieldCOPY{
 
 const matchMap = [
     {match: regexes.GENERIC_PIC, type: FieldPIC}, 
-    {match: regexes.GROUP_ITEM, type: FieldGroup}, 
     {match: regexes.REDEFINES, type: FieldREDEFINE}, 
     {match: regexes.IMPORT_COPY, type: FieldCOPY}, 
 ];
@@ -139,7 +135,7 @@ class CopybookParser {
             if(line.substr(6, 1) != ' ') continue;
             
             if(statement == '') startedAtLine = l + 1;
-            statement += line.substring(7);
+            statement += line.substring(6);
             if(!line.endsWith('.')) continue;
 
             yield {
@@ -166,6 +162,8 @@ class CopybookParser {
             if(iteratee.value === undefined) continue;
             
             var {statement, startedAtLine, endedAtLine} = iteratee.value;
+
+            statement = statement.replace(/\t\n\r/g,' ');
 
             var newField = this.parseStatemant(statement, startedAtLine, endedAtLine);
             if(!newField ) continue;
@@ -267,7 +265,7 @@ class Copybook{
 if(typeof module !== "undefined") {
     module.exports = {
         FIELD_TYPE,
-        FieldGroup,
+        PIC_TYPE,
         FieldPIC,
         FieldREDEFINE,
         FieldCOPY,

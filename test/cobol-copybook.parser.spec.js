@@ -23,11 +23,11 @@ describe('Read and parse copybook definitions', function(){
     });
     
     it('should parse cobol copybook', function(){
-        var script = new String(fs.readFileSync('./test/CCP0001.CPY'));
+        var script = new String(fs.readFileSync('./test/CVCAW027.cpy'));
         
         var book = parser.parse(script);
         
-        fs.writeFileSync('./parsed-book.CCP0001.CPY.json', JSON.stringify(book, null, 2));
+        fs.writeFileSync('./parsed-book.CVCAW027.CPY.json', JSON.stringify(book, null, 2));
         
         
         assert(book.fields.length==71, 'error');
