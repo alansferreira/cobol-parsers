@@ -6,7 +6,7 @@ const copybookParser = new CopybookParser();
 
 
 describe('Read and parse copybook data file', function(){
-    const initialRecordData = "011111110*AAAA   *AAAAA1**AAAAA2**AAAAA3*0777777701022222220*AA*0333004444444444444051022222220*AA*033300444444444444405";
+    const initialRecordData = "01111111}*AAAA   *AAAAA1**AAAAA2**AAAAA3*0777777701022222220*AA*0333004444444444444051022222220*AA*033300444444444444405";
 
     it('should parse generate JSDoc of copybook', function(){
         const script = new String(fs.readFileSync('./test/CVCAW027.cpy'));
@@ -36,7 +36,7 @@ describe('Read and parse copybook data file', function(){
         */
 
         /** @type {CVCAW027} */ const myVar = record.toModel(initialRecordData);
-        
+
         assert(myVar.cvcaw027Registro.cvcaw027SistLyoutOrige == '*AAAA', 'error');
         assert(myVar.cvcaw027Registro.cvcaw027Ocorrencias.cvcaw027Ocorr[2] == '*AAAAA3*');
         assert(myVar.cvcaw027Registro.cvcaw027NseqRegTotal[0].cvcaw027Vpagto == 444444444444.4);

@@ -1,5 +1,5 @@
        05  CVCAW027-REGISTRO. 
-        10  CVCAW027-NUM-LOTE            PIC 9(09).
+        10  CVCAW027-NUM-LOTE            PIC S9(09)V99.
         10  CVCAW027-SIST-LYOUT-ORIGE    PIC X(08).
         10  CVCAW027-OCORRENCIAS  .                  
           15  CVCAW027-OCORR             PIC X(08) OCCURS 3 TIMES.
@@ -9,5 +9,5 @@
           15  CVCAW027-NUM-ARQUIVO         PIC 9(09)  VALUE 5.
           15  CVCAW027-CSIST-ORIG          PIC X(04)  VALUE 5.
           15  CVCAW027-NSEQ-PAGFOR         PIC 9(05).
-          15  CVCAW027-VPAGTO              PIC 9(15)V9(02) COMP-3  VALUE 5.
+          15  CVCAW027-VPAGTO              PIC 9(15)V9(02) USAGE IS COMPUTATIONAL-3  VALUE 5.
           15  CVCAW027-IND-ERRO            PIC 9(01).

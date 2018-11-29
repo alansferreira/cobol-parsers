@@ -59,7 +59,7 @@ const picToPrimitiveHandlers = {};
 const picToPrimitiveNumericHandler = picToPrimitiveHandlers[PIC_TYPE.NUMERIC] = (content, field) => {
     if(!content) return 0;
     
-    const decimalsLength = field.decimalsType_2 | (field.decimalsType_1.length-1);
+    const decimalsLength = field.decimalsType_2 || (field.decimalsType_1.length-1);
 
     if(decimalsLength > 0) {
         const int = content.slice(0,content.length - decimalsLength);
@@ -73,9 +73,30 @@ const picToPrimitiveNumericHandler = picToPrimitiveHandlers[PIC_TYPE.NUMERIC] = 
 const picToPrimitiveAlphaHandler = picToPrimitiveHandlers[PIC_TYPE.ALPHABETIC] = picToPrimitiveHandlers[PIC_TYPE.ALPHANUMERIC] = (content, field) => {
     return content.replace(/\s+$/, '');
 };
+const signedMap = { '{': '0', 'A': '1', 'B': '2', 'C': '3', 'D': '4', 'E': '5', 'F': '6', 'G': '7', 'H': '8', 'I': '9',
+                    '}': '-0', 'J': '-1', 'K': '-2', 'L': '-3', 'M': '-4', 'N': '-5', 'O': '-6', 'P': '-7', 'Q': '-8', 'R': '-9',
+                };
+
+picToPrimitiveHandlers[PIC_TYPE.SIGNED_NUMBER] = (content, field) => {
+    if(!content) return 0;
+    
+    const decimalsLength = field.decimalsType_2 || (field.decimalsType_1.toString().length);
+    const signedNumber = signedMap[content[content.length-1]];
+    const isNegative = signedNumber.length == 2;
+    const contentCopy = content.slice(0, content.length-1) + Math.abs(signedNumber);
+    
+    if(decimalsLength > 0) {
+        const int = contentCopy.slice(0,contentCopy.length - decimalsLength);
+        const dec = contentCopy.slice(contentCopy.length - decimalsLength, contentCopy.length);
+        
+        return Number.parseFloat(int + '.' + dec) * (isNegative ? -1: 1);
+    }else{
+        return Number.parseInt(contentCopy) * (isNegative ? -1: 1);
+    }
+
+};
 picToPrimitiveHandlers[PIC_TYPE.POSITIVE_NUMBER] = (content, field) => picToPrimitiveNumericHandler(content, field);
 picToPrimitiveHandlers[PIC_TYPE.NEGATIVE_NUMBER] = (content, field) => picToPrimitiveNumericHandler(content, field);
-picToPrimitiveHandlers[PIC_TYPE.SIGNED_NUMBER] = (content, field) => picToPrimitiveNumericHandler(content, field);
 
 /**
  * @param {string} content
@@ -137,7 +158,7 @@ const primitiveToPicHandlers = {};
 const primitiveToPicNumericHandler = primitiveToPicHandlers[PIC_TYPE.NUMERIC] = (value, field) => {
     if(!value) return '';
     
-    const decimalsLength = field.decimalsType_2 | (field.decimalsType_1.length-1);
+    const decimalsLength = field.decimalsType_2 || (field.decimalsType_1.length-1);
 
     // if(decimalsLength > 0) {
     const fixedDigits = Number.parseFloat(value).toFixed(decimalsLength || 0).replace('.', '');
@@ -152,9 +173,63 @@ const primitiveToPicAlphaHandler = primitiveToPicHandlers[PIC_TYPE.ALPHABETIC] =
     const trimmedContent = (content || '').slice(0, field.precisionSize);
     return (trimmedContent + ' '.repeat(field.precisionSize - trimmedContent.length));
 };
+
+const inverseSignedMap = { 
+    '0': '{', 
+    '1': 'A', 
+    '2': 'B', 
+    '3': 'C', 
+    '4': 'D', 
+    '5': 'E', 
+    '6': 'F', 
+    '7': 'G', 
+    '8': 'H', 
+    '9': 'I', 
+    '-0': '}', 
+    '-1': 'J', 
+    '-2': 'K', 
+    '-3': 'L', 
+    '-4': 'M', 
+    '-5': 'N', 
+    '-6': 'O', 
+    '-7': 'P', 
+    '-8': 'Q', 
+    '-9': 'R', 
+};
+
+primitiveToPicHandlers[PIC_TYPE.SIGNED_NUMBER] = (content, field) => {
+    if(!content) return '0'.repeat(field.precisionSize - 1) + '{';
+    
+    const decimalsLength = field.decimalsType_2 || (field.decimalsType_1.toString().length);
+    
+    const isNegative = content < 0;
+    const fixedDigits = Number.parseFloat(Math.abs(content)).toFixed(decimalsLength || 0).replace('.', '');
+    const signedLetter = (inverseSignedMap[(isNegative? '-': '') + fixedDigits.slice(fixedDigits.length-1)]);
+    const result = ('0'.repeat(field.precisionSize - fixedDigits.length) + fixedDigits);
+
+    return result.slice(0, result.length-1) + signedLetter;
+
+    // // let trimmedContent = absContent.slice(0, field.precisionSize);
+    // // trimmedContent = (trimmedContent);
+
+    // // const signedLetter = (inverseSignedMap[(isNegative? '-': '') + absContent.slice(absContent.length-1)])
+
+    // // return trimmedContent.slice(0, trimmedContent.length-1) + signedLetter;
+
+
+    
+    // // const decimalsLength = field.decimalsType_2 || (field.decimalsType_1.length-1);
+
+    // // // if(decimalsLength > 0) {
+    // // const fixedDigits = Number.parseFloat(value).toFixed(decimalsLength || 0).replace('.', '');
+
+    // // return ('0'.repeat(field.precisionSize - fixedDigits.length) + fixedDigits);
+
+
+};
+
 primitiveToPicHandlers[PIC_TYPE.POSITIVE_NUMBER] = (content, field) => primitiveToPicNumericHandler(content, field);
 primitiveToPicHandlers[PIC_TYPE.NEGATIVE_NUMBER] = (content, field) => primitiveToPicNumericHandler(content, field);
-primitiveToPicHandlers[PIC_TYPE.SIGNED_NUMBER] = (content, field) => primitiveToPicNumericHandler(content, field);
 
 /**
  * @param {string} value

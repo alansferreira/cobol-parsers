@@ -1,6 +1,6 @@
 var regexes = {
     GENERIC_PIC: {
-        REGEX: /^( +([0-9]+))( +([a-zA-Z-0-9]+))( +PIC +([\+9]?[\-9]?[sS9]?[xX]??[aA]?[9]?) {0,}\(([0-9]+)\)( {0,}V([0-9]+)( {0,}\(([0-9]+)\))?)?( {0,}COMP(-([1-3]))? {0,})?)?( +VALUE +(\"[^\"]+\"|[0-9]+))?( +OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)?( +DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\./,
+        REGEX: /^( +([0-9]+))( +([a-zA-Z-0-9]+))( +PIC +([\+9]?[\-9]?[sS9]?[xX]??[aA]?[9]?) {0,}\(([0-9]+)\)( {0,}V([0-9]+)( {0,}\(([0-9]+)\))?)?( {0,}(USAGE +IS)? {0,}(COMP|COMPUTATIONAL)(-([1-3]))?)?)?( +VALUE +(\"[^\"]+\"|[0-9]+))?( +OCCURS +([0-9]+)( +TO +([0-9]+))?( +TIMES)?( +DEPENDING +ON +([a-zA-Z-0-9]+))?)? {0,}\./,
         FIELD_TYPE: 'PIC',
         CAP_INDEX: { 
             LEVEL: 1, 
@@ -9,12 +9,12 @@ var regexes = {
             PRECISION_SIZE: 7, 
             DECIMALS_TYPE_1: 9,
             DECIMALS_TYPE_2: 11,
-            HAS_COMPRESSION: 12,
-            COMPRESSION_LEVEL: 14, 
-            DEFAULT_VALUE: 16,
-            OCCURS_MIN: 18, 
-            OCCURS_MAX: 20,
-            DEPENDING_ON: 23
+            HAS_COMPRESSION: 14,
+            COMPRESSION_LEVEL: 16, 
+            DEFAULT_VALUE: 18,
+            OCCURS_MIN: 20, 
+            OCCURS_MAX: 22,
+            DEPENDING_ON: 25
         }
     },
     REDEFINES: {
