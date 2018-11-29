@@ -81,7 +81,7 @@ picToPrimitiveHandlers[PIC_TYPE.SIGNED_NUMBER] = (content, field) => picToPrimit
  * @param {string} content
  * @param {FieldPIC} field
  */
- function picToPrimitive(content, field){
+function picToPrimitive(content, field){
     return picToPrimitiveHandlers[field.picType](content, field);
 }
 
@@ -131,7 +131,40 @@ function getCopyRecordLength(field){
 };
 
 
-function modelToString(field, model){
+
+
+const primitiveToPicHandlers = {};
+const primitiveToPicNumericHandler = primitiveToPicHandlers[PIC_TYPE.NUMERIC] = (value, field) => {
+    if(!value) return '';
+    
+    const decimalsLength = field.decimalsType_2 | (field.decimalsType_1.length-1);
+
+    // if(decimalsLength > 0) {
+    const fixedDigits = Number.parseFloat(value).toFixed(decimalsLength || 0).replace('.', '');
+
+    return ('0'.repeat(field.precisionSize - fixedDigits.length) + fixedDigits);
+    // }else{
+    //     return Number.parseInt(value);
+    // }
+
+};
+const primitiveToPicAlphaHandler = primitiveToPicHandlers[PIC_TYPE.ALPHABETIC] = primitiveToPicHandlers[PIC_TYPE.ALPHANUMERIC] = (content, field) => {
+    const trimmedContent = (content || '').slice(0, field.precisionSize);
+    return (trimmedContent + ' '.repeat(field.precisionSize - trimmedContent.length));
+};
+primitiveToPicHandlers[PIC_TYPE.POSITIVE_NUMBER] = (content, field) => primitiveToPicNumericHandler(content, field);
+primitiveToPicHandlers[PIC_TYPE.NEGATIVE_NUMBER] = (content, field) => primitiveToPicNumericHandler(content, field);
+primitiveToPicHandlers[PIC_TYPE.SIGNED_NUMBER] = (content, field) => primitiveToPicNumericHandler(content, field);
+
+/**
+ * @param {string} value
+ * @param {FieldPIC} field
+ */
+function primitiveToPic(value, field){
+    return primitiveToPicHandlers[field.picType](value, field);
+}
+
+function modelToString(model, field){
     let occurs = field.occursSize;
     const hasOccurs = !!(occurs > 1);
     const hasChildren = !!(field.fields && field.fields.length);
@@ -139,38 +172,35 @@ function modelToString(field, model){
     const result = [];
     
     if(!hasChildren && !hasOccurs){
-        return picToPrimitive(content.slice(_offset, _offset + field.precisionSize), field);
+        return primitiveToPic(model, field);
     }
 
     if(hasChildren && !hasOccurs ){
+        
         for (let f = 0; f < field.fields.length; f++) {
             const child = field.fields[f];
-            obj[camelCase(child.name)] = picToModel(content, _offset, child);
-            _offset += getPicRecordLength(child);
+            result.push(modelToString(model[camelCase(child.name)], child));
         }
-        return obj;
+        return result.join('');
     }
     
     if(!hasChildren && hasOccurs ){
-        let value;
         for(let o = 0; o < occurs ; o++){
-            value =  picToPrimitive(content.slice(_offset, _offset + field.precisionSize), field);
-            arr.push(value);
-            _offset += field.precisionSize;
+            result.push(primitiveToPic(model[o], field));
         }
-        return arr;
+        return result.join('');
     }
 
     if(hasChildren && hasOccurs){
+        let currentModel = {};
         for(let o = 0; o < occurs ; o++){
+            currentModel = model[o];
             for (let f = 0; f < field.fields.length; f++) {
                 const child = field.fields[f];
-                obj[camelCase(child.name)] = picToModel(content, _offset, child);
-                _offset += getPicRecordLength(child);
+                result.push(modelToString(currentModel[camelCase(child.name)], child));
             }
-            arr.push(obj);
         }
-        return arr;
+        return result.join('');
     }
 }
 
@@ -224,18 +254,17 @@ class CopybookRecord {
     }
 
     toString(model){
-        const obj = {};
+        const result = [];
         for (let f = 0; f < this.book.fields.length; f++) {
             const child = this.book.fields[f];
             
             if([FIELD_TYPE.REDEFINE, FIELD_TYPE.COPY].indexOf(child.type) > -1) continue;
 
-            obj[camelCase(child.name)] = modelToString(child, model[camelCase(child.name)]);
+            result.push(modelToString(model[camelCase(child.name)], child));
         }
 
-        return obj;        
+        return result.join('');
     }
-
 
 }
 

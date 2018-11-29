@@ -55,7 +55,9 @@ describe('Read and parse copybook data file', function(){
         
 
         const result = recordParser.toString(myVar);
-
+        console.log('Original record: ', initialRecordData);
+        console.log('Reloaded record: ', result);
+        
         assert(initialRecordData === result, 'error');
     });
 
