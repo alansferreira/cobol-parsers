@@ -71,11 +71,11 @@ const PIC_TYPE = {
 class FieldPIC {
     constructor(statement, match){
         this.src = statement;
-        /** @type {string} */this.type = FIELD_TYPE.PIC;
+        /** @type {'PIC' | 'REDEFINE' | 'COPY'} */this.type = FIELD_TYPE.PIC;
 
         /** @type {number} */this.level = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.LEVEL]);
         /** @type {string} */this.name = match[regexes.GENERIC_PIC.CAP_INDEX.NAME];
-        /** @type {string} */this.picType = match[regexes.GENERIC_PIC.CAP_INDEX.PIC_TYPE];
+        /** @type {"+9" | "-9" | "S9" | "X" | "A" | "9" | "" | undefined} */this.picType = match[regexes.GENERIC_PIC.CAP_INDEX.PIC_TYPE];
         /** @type {number} */this.precisionSize = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.PRECISION_SIZE] || 0);
         /** @type {number} */this.decimalsType_1 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_1] || 0);
         /** @type {number} */this.decimalsType_2 = parseInt(match[regexes.GENERIC_PIC.CAP_INDEX.DECIMALS_TYPE_2] || 0);
